@@ -1,6 +1,6 @@
 <properties>
     <!--
-        创建demo需要的索引表结构
+        Demo indice mapping structure
     -->
     <property name="createDemoIndice">
         <![CDATA[{
@@ -24,7 +24,7 @@
                         },
                         "applicationName": {
                             "type": "text",
-                            "fields": { ##dsl注释 定义精确查找的内部keyword字段
+                            "fields": { ##Note: define an internal keyword field for precision search
                                 "keyword": {
                                     "type": "keyword"
                                 }
@@ -38,7 +38,7 @@
                         },
                         "orderId": {
                             "type": "text",
-                            "fields": { ##dsl注释 定义精确查找的内部keyword字段
+                            "fields": { ##Note: define an internal keyword field for precision search
                                 "keyword": {
                                     "type": "keyword"
                                 }
@@ -51,37 +51,39 @@
     </property>
 
     <!--
-        一个简单的检索dsl,中有四个变量
+        A simple search DSL with four variables:
         applicationName1
         applicationName2
         startTime
         endTime
-        通过map传递变量参数值
 
-        变量语法参考文档：
+        Pass variable parameter values through the map
+
+        Reference documentation for variable syntax：
+        https://my.oschina.net/bboss/blog/1556866
     -->
     <property name="searchDatas">
         <![CDATA[{
             "query": {
                 "bool": {
                     "filter": [
-                        {  ## 多值检索，查找多个应用名称对应的文档记录
+                        {  ## Multi-terms search, find multiple application name corresponding to the document records
                             "terms": {
                                 "applicationName.keyword": [#[applicationName1],#[applicationName2]]
                             }
                         },
-                        {   ## 时间范围检索，返回对应时间范围内的记录，接受long型的值
+                        {   ## Time range search, return the corresponding time range of records
                             "range": {
                                 "agentStarttime": {
-                                    "gte": #[startTime],##统计开始时间
-                                    "lt": #[endTime]  ##统计截止时间
+                                    "gte": #[startTime],##Statistical start time
+                                    "lt": #[endTime]  ##Statistical end time
                                 }
                             }
                         }
                     ]
                 }
             },
-            ## 最多返回1000条记录
+            ## Up to 1000 records are returned
             "size":1000
         }]]>
     </property>

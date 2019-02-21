@@ -1,5 +1,5 @@
-package com.example.esbboss.service;/*
- *  Copyright 2008 biaoping.yin
+/*
+ *  Copyright 2008-2019 bboss
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@ package com.example.esbboss.service;/*
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+package com.example.esbboss.service;
 
 import com.example.esbboss.entity.Demo;
 import com.example.esbboss.entity.DemoSearchResult;
@@ -31,7 +32,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * @author yinbp[yin-bp@163.com]
+ */
 @Service
 public class DocumentCRUD {
 	@Autowired

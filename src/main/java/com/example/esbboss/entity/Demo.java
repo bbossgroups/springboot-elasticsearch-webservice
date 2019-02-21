@@ -1,5 +1,5 @@
-package com.example.esbboss.entity;/*
- *  Copyright 2008 biaoping.yin
+/*
+ *  Copyright 2008-2019 bboss
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@ package com.example.esbboss.entity;/*
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
+package com.example.esbboss.entity;
 
 import com.frameworkset.orm.annotation.ESId;
 import org.frameworkset.elasticsearch.entity.ESBaseData;
@@ -21,7 +21,9 @@ import org.frameworkset.elasticsearch.entity.ESBaseData;
 import java.util.Date;
 
 /**
- * Test entity, which can inherit the meta attribute from the ESBaseData object. The meta attribute of the document will be set to the object instance during retrieval
+ * Test entity, which can inherit the meta attribute from the ESBaseData object.
+ * The meta attribute of the document will be set to the object instance during retrieval
+ * @author yinbp[yin-bp@163.com]
  */
 public class Demo extends ESBaseData {
 	private Object dynamicPriceTemplate;
