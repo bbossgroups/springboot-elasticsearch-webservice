@@ -2,10 +2,10 @@
 
 Web service demo based on spring boot 2 and Elasticsearch bboss client 5.3.8，Verify the following elasticsearch functions:
 
-1. Determine whether the index exists
-2. Delete existing indexes
-3. Create indexes
-4. Get the index definition structure
+1. Determine whether the indice exists
+2. Delete existing indice
+3. Create indice by dsl
+4. Get the indice definition structure
 5. Create/modify/delete/query index documents
 6. search documents pararrel
 
