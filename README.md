@@ -1,3 +1,5 @@
+# Demo Introduce 
+
 Web service demo based on spring boot 2 and Elasticsearch bboss client 5.3.8，Verify the following elasticsearch functions:
 
 1. Determine whether the index exists
@@ -7,7 +9,7 @@ Web service demo based on spring boot 2 and Elasticsearch bboss client 5.3.8，V
 5. Create/modify/delete/query index documents
 6. search documents pararrel
 
-# build
+# Demo build 
 
 Modify the es address in es_bboss_web\src\main\resources\application.properties file:
 
@@ -23,9 +25,9 @@ mvn clean package
 
 
 
-# run 
+# Demo run 
 
-First run elasticsearch 5 or elasticsearch 6.
+First run elasticsearch 5 or elasticsearch 6.Then run the demo:
 
 ```
 cd target
@@ -35,7 +37,7 @@ java -jar es_bboss_web-0.0.1-SNAPSHOT.jar
 
 
 
-# 访问
+# Perform the service
 
 Enter the following address in the browser to perform the add, delete, modify and search operations:
 
