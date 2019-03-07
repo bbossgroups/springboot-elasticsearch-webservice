@@ -46,6 +46,7 @@ public class Demo extends ESBaseData {
 	protected Date agentStarttime;
 	private String applicationName;
 	private String orderId;
+//	@JsonProperty(value="contrast_status",access= JsonProperty.Access.WRITE_ONLY)
 	private int contrastStatus;
 
 	public String getName() {
