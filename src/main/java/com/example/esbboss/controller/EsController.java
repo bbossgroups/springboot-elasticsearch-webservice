@@ -38,6 +38,7 @@ public class EsController {
         DemoSearchResult demoSearchResult = documentCRUD.search();
         documentCRUD.searchAllPararrel();
         documentCRUD.deleteDocuments();
+        documentCRUD.testMultiCluster();
         return demoSearchResult;
     }
 

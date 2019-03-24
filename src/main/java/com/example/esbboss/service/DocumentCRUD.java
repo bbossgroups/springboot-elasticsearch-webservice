@@ -52,8 +52,8 @@ public class DocumentCRUD {
 		exist = bbossESStarterDefault.getRestClient("logs").existIndice("twitter");
 		System.out.println("logs  twitter:"+exist);
 		//获取logs对应的Elasticsearch集群客户端，判断索引是否定义
-		exist = bbossESStarterDefault.getRestClient("logs").existIndice("agentinfo");
-		System.out.println("logs agentinfo:"+exist);
+		exist = bbossESStarterDefault.getRestClient("logs").existIndice("demo");
+		System.out.println("logs demo:"+exist);
 	}
 
 	public void dropAndCreateAndGetIndice(){
