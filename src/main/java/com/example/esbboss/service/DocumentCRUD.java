@@ -21,6 +21,8 @@ import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.boot.BBossESStarter;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.entity.ESDatas;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +39,7 @@ import java.util.Map;
  */
 @Service
 public class DocumentCRUD {
+	private Logger logger = LoggerFactory.getLogger(DocumentCRUD.class);
 	@Autowired
 	private BBossESStarter bbossESStarter;
 	//DSL config file path
@@ -53,7 +56,7 @@ public class DocumentCRUD {
 			//Delete mapping if the indice demo already exists
 			if(exist) {
 				String r = clientUtil.dropIndice("demo");
-				System.out.println("clientUtil.dropIndice(\"demo\") response:"+r);
+				logger.debug("clientUtil.dropIndice(\"demo\") response:"+r);
 
 			}
 			//Create index demo
@@ -61,7 +64,7 @@ public class DocumentCRUD {
 					"createDemoIndice");//Index mapping DSL script name, defined createDemoIndice in esmapper/demo.xml
 
 			String demoIndice = clientUtil.getIndice("demo");//Gets the newly created indice structure
-			System.out.println("after createIndiceMapping clientUtil.getIndice(\"demo\") response:"+demoIndice);
+			logger.debug("after createIndiceMapping clientUtil.getIndice(\"demo\") response:"+demoIndice);
 		} catch (ElasticSearchException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -92,8 +95,8 @@ public class DocumentCRUD {
 
 
 
-		System.out.println("Print the result：addDocument-------------------------");
-		System.out.println(response);
+		logger.debug("Print the result：addDocument-------------------------");
+		logger.debug(response);
 
 		demo = new Demo();
 		demo.setDemoId(3l);//Specify the document id, the unique identity, and mark with the @ESId annotation. If the demoId already exists, modify the document; otherwise, add the document
@@ -135,14 +138,14 @@ public class DocumentCRUD {
 		response = clientUtil.getDocument("demo",//indice name
 				"demo",//idnex type
 				"2");//document id
-		System.out.println("Print the modified result:getDocument-------------------------");
-		System.out.println(response);
+		logger.debug("Print the modified result:getDocument-------------------------");
+		logger.debug(response);
 
 
 
 
-		System.out.println("Print the modified result：getDocument-------------------------");
-		System.out.println(response);
+		logger.debug("Print the modified result：getDocument-------------------------");
+		logger.debug(response);
 
 
 	}
