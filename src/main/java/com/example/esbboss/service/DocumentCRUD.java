@@ -156,7 +156,7 @@ public class DocumentCRUD {
 		//Batch delete documents
 		clientUtil.deleteDocuments("demo",//indice name
 				"demo",//idnex type
-				"2","3");//Batch delete document ids
+				new String[]{"2","3"});//Batch delete document ids
 	}
 
 	/**
