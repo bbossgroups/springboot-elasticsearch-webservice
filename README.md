@@ -41,7 +41,7 @@ java -jar es_bboss_web-0.0.1-SNAPSHOT.jar
 
 Enter the following address in the browser to perform the add, delete, modify and search operations:
 
-http://localhost:808/testBBossCrud
+http://localhost:808/testBBossIndexCrud
 
 Return the following search results in the browser to indicate successful execution:
 
@@ -98,16 +98,7 @@ Return the following search results in the browser to indicate successful execut
     "totalSize": 2
 }
 ```
-## 快速集成和应用 
 
-非spring boot项目：
-
-https://esdoc.bbossgroups.com/#/common-project-with-bboss
-
-spring boot项目：
-
-https://esdoc.bbossgroups.com/#/spring-booter-with-bboss
-
-详细配置说明参考文档：
+development document：
 
 https://esdoc.bbossgroups.com/#/development
