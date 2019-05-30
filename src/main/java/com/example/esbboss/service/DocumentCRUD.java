@@ -64,7 +64,7 @@ public class DocumentCRUD {
 					"createDemoIndice");//Index mapping DSL script name, defined createDemoIndice in esmapper/demo.xml
 
 			String demoIndice = clientUtil.getIndice("demo");//Gets the newly created indice structure
-			logger.debug("after createIndiceMapping clientUtil.getIndice(\"demo\") response:"+demoIndice);
+			logger.info("after createIndiceMapping clientUtil.getIndice(\"demo\") response:"+demoIndice);
 		} catch (ElasticSearchException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,6 +81,7 @@ public class DocumentCRUD {
 		Demo demo = new Demo();
 		demo.setDemoId(2l);//Specify the document id, the unique identity, and mark with the @ESId annotation. If the demoId already exists, modify the document; otherwise, add the document
 		demo.setAgentStarttime(new Date());
+		demo.setAgentStarttimezh(new Date());
 		demo.setApplicationName("blackcatdemo2");
 		demo.setContentbody("this is content body2");
 		demo.setName("liudehua");
@@ -106,7 +107,8 @@ public class DocumentCRUD {
 		demo.setName("zhangxueyou");
 		demo.setOrderId("NFZF15045871807281445364228");
 		demo.setContrastStatus(3);
-
+		demo.setAgentStarttime(new Date());
+		demo.setAgentStarttimezh(new Date());
 
 		//Add the document and force refresh
 		response = clientUtil.addDocument("demo",//indice name
@@ -128,6 +130,7 @@ public class DocumentCRUD {
 		demo.setName("刘德华modify\t");
 		demo.setOrderId("NFZF15045871807281445364228");
 		demo.setContrastStatus(2);
+		demo.setAgentStarttimezh(new Date());
 		//Execute update and force refresh
 		response = clientUtil.addDocument("demo",//index name
 				"demo",//idnex type
