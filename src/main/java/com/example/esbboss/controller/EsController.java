@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class EsController {
     private Logger logger = LoggerFactory.getLogger(EsController.class);
 
-
     @Autowired
     private DocumentCRUD documentCRUD;
     @RequestMapping("/health")
