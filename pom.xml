@@ -51,6 +51,7 @@
 					<artifactId>slf4j-log4j12</artifactId>
 					<groupId>org.slf4j</groupId>
 				</exclusion>
+				<!--
 				<exclusion>
 					<artifactId>org.springframework.boot</artifactId>
 					<groupId>spring-boot-autoconfigure</groupId>
@@ -58,7 +59,7 @@
 				<exclusion>
 					<artifactId>org.springframework.boot</artifactId>
 					<groupId>spring-boot-configuration-processor</groupId>
-				</exclusion>
+				</exclusion>-->
 			</exclusions>
 		</dependency>
 
