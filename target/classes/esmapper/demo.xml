@@ -1,0 +1,92 @@
+<properties>
+    <!--
+        Demo indice mapping structure
+    -->
+    <property name="createDemoIndice">
+        <![CDATA[{
+            "settings": {
+                "number_of_shards": 6,
+                "index.refresh_interval": "5s"
+            },
+            "mappings": {
+                "demo": {
+                    "properties": {
+                        "demoId":{
+                            "type":"long"
+                        },
+                        "contentbody": {
+                            "type": "text"
+
+                        },
+                        "agentStarttime": {
+                            "type": "date"
+                             ## ,"format":"yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||epoch_millis"
+                        },
+                        "applicationName": {
+                            "type": "text",
+                            "fields": { ##Note: define an internal keyword field for precision search
+                                "keyword": {
+                                    "type": "keyword"
+                                }
+                            }
+                        },
+                        "name": {
+                            "type": "text"
+                        },
+                        "contrastStatus":{
+                            "type":"integer"
+                        },
+                        "orderId": {
+                            "type": "text",
+                            "fields": { ##Note: define an internal keyword field for precision search
+                                "keyword": {
+                                    "type": "keyword"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }]]>
+    </property>
+
+    <!--
+        A simple search DSL with four variables:
+        applicationName1
+        applicationName2
+        startTime
+        endTime
+
+        Pass variable parameter values through the map
+
+        Reference documentation for variable syntax：
+        https://my.oschina.net/bboss/blog/1556866
+    -->
+    <property name="searchDatas">
+        <![CDATA[{
+            "query": {
+                "bool": {
+                    "filter": [
+                        {  ## Multi-terms search, find multiple application name corresponding to the document records
+                            "terms": {
+                                "applicationName.keyword": [#[applicationName1],#[applicationName2]]
+                            }
+                        },
+                        {   ## Time range search, return the corresponding time range of records
+                            "range": {
+                                "agentStarttime": {
+                                    "gte": #[startTime],##Statistical start time
+                                    "lt": #[endTime]  ##Statistical end time
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            ## Up to 1000 records are returned
+            "size":1000
+        }]]>
+    </property>
+
+
+</properties>
