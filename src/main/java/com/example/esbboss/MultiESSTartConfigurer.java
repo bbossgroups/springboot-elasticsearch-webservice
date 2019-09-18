@@ -22,16 +22,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 /**
- * 配置多个es集群
+ * 多集群演示功能测试用例，spring boot配置项以spring.elasticsearch.bboss.集群名称开头，例如：
+ * spring.elasticsearch.bboss.default 默认es集群
+ * spring.elasticsearch.bboss.logs  logs es集群
+ * 两个集群通过 com.example.esbboss.MultiESSTartConfigurer加载application.yml中的配置并初始化其中的es集群组件实例
+ * @author yinbp [122054810@qq.com]
  */
-//@Configuration
-//@Profile("multi-datasource")
 @Configuration
 public class MultiESSTartConfigurer {
 	@Primary
 	@Bean(initMethod = "start")
 	@ConfigurationProperties("spring.elasticsearch.bboss.default")
-	public BBossESStarter bbossESStarterDefault(){
+	public BBossESStarter bbossESStarter(){
 		return new BBossESStarter();
 
 	}

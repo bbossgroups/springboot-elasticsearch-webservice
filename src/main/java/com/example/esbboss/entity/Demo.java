@@ -15,6 +15,8 @@
  */
 package com.example.esbboss.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.frameworkset.orm.annotation.Column;
 import com.frameworkset.orm.annotation.ESId;
 import org.frameworkset.elasticsearch.entity.ESBaseData;
 
@@ -44,6 +46,9 @@ public class Demo extends ESBaseData {
 	 */
 
 	protected Date agentStarttime;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Column(dataformat = "yyyy-MM-dd HH:mm:ss")
+	private Date agentStarttimezh;
 	private String applicationName;
 	private String orderId;
 //	@JsonProperty(value="contrast_status",access= JsonProperty.Access.WRITE_ONLY)
@@ -113,5 +118,13 @@ public class Demo extends ESBaseData {
 
 	public void setContrastStatus(int contrastStatus) {
 		this.contrastStatus = contrastStatus;
+	}
+
+	public Date getAgentStarttimezh() {
+		return agentStarttimezh;
+	}
+
+	public void setAgentStarttimezh(Date agentStarttimezh) {
+		this.agentStarttimezh = agentStarttimezh;
 	}
 }
