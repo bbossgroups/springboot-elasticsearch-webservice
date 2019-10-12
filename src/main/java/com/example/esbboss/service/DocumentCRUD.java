@@ -221,9 +221,4 @@ public class DocumentCRUD {
 		demoSearchResult.setTotalSize(totalSize);
 		return demoSearchResult;
 	}
-
-
-
-
-
 }
