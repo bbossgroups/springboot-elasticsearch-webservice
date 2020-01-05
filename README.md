@@ -100,14 +100,34 @@ Return the following search results in the browser to indicate successful execut
 ```
 
 # run the db-elasticsearch data tran job
-Enter the following address in the browser to perform the add, delete, modify and search operations:
+Enter the following address in the browser to run the db-elasticsearch data tran job:
 
 http://localhost:808/scheduleDB2ESJob
 
-Return the following search results in the browser to indicate successful execution:
+Return the following results in the browser to show successful execution:
 
+作业启动成功
 ```json
-db2ESImportBuilder started.
+db2ESImport job started.
+```
+
+作业已经启动
+```json
+db2ESImport job has started.
+```
+# stop the db-elasticsearch data tran job
+Enter the following address in the browser to stop the db-elasticsearch data tran job:
+
+http://localhost:808/stopDB2ESJob
+
+Return the following search results in the browser to show successful execution:
+作业停止成功
+```json
+db2ESImport job started.
+```
+作业已经停止
+```json
+db2ESImport job has started.
 ```
 
 # development document：
