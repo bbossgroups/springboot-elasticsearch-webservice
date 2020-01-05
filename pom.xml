@@ -54,8 +54,30 @@
 
 			</exclusions>
 		</dependency>
-
-		
+		<!--导入db-elasticsearch数据同步依赖包开始-->
+		<dependency>
+			<groupId>com.bbossgroups.plugins</groupId>
+			<artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
+			<version>5.9.9</version>
+			<exclusions>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.23.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.40</version>
+		</dependency>
+		<!--导入db-elasticsearch数据同步依赖包结束-->
 	</dependencies>
 
 	<build>

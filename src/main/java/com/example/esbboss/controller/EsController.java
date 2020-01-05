@@ -65,5 +65,9 @@ public class EsController {
             throw  e;
         }
     }
+    @RequestMapping("/scheduleDB2ESJob")
+    public @ResponseBody String scheduleDB2ESJob(){
+        return documentCRUD.scheduleDB2ESJob();
+    }
 
 }

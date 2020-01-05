@@ -37,7 +37,7 @@ java -jar es_bboss_web-0.0.1-SNAPSHOT.jar
 
 
 
-# Perform the service
+# Run the service
 
 Enter the following address in the browser to perform the add, delete, modify and search operations:
 
@@ -99,6 +99,17 @@ Return the following search results in the browser to indicate successful execut
 }
 ```
 
-development document：
+# run the db-elasticsearch data tran job
+Enter the following address in the browser to perform the add, delete, modify and search operations:
+
+http://localhost:808/scheduleDB2ESJob
+
+Return the following search results in the browser to indicate successful execution:
+
+```json
+db2ESImportBuilder started.
+```
+
+# development document：
 
 https://esdoc.bbossgroups.com/#/development
