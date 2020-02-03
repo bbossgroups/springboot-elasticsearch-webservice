@@ -98,7 +98,17 @@ Return the following search results in the browser to indicate successful execut
     "totalSize": 2
 }
 ```
-
+# 本demo还包含两个数据同步的案例：
+- DB-Elasticsearch数据同步
+- Hbase-Elasticsearch数据同步（基于hbase 1.3.0开发，如果需要对接其他版本，需要调整pom.xml中的hbase-shaded-client maven坐标版本号）
+```xml
+	    <dependency>
+			<groupId>org.apache.hbase</groupId>
+			<artifactId>hbase-shaded-client</artifactId>
+			<version>1.2.4</version>
+		</dependency>
+```
+使用方法如下：
 # run the db-elasticsearch data tran job
 Enter the following address in the browser to run the db-elasticsearch data tran job:
 
@@ -128,6 +138,37 @@ db2ESImport job started.
 作业已经停止
 ```json
 db2ESImport job has started.
+```
+
+# run the hbase-elasticsearch data tran job
+Enter the following address in the browser to run the hbase-elasticsearch data tran job:
+
+http://localhost:808/scheduleHBase2ESJob
+
+Return the following results in the browser to show successful execution:
+
+作业启动成功
+```json
+HBase2ES job started.
+```
+
+作业已经启动
+```json
+HBase2ES job has started.
+```
+# stop the db-elasticsearch data tran job
+Enter the following address in the browser to stop the hbase-elasticsearch data tran job:
+
+http://localhost:808/stopHBase2ESJob
+
+Return the following search results in the browser to show successful execution:
+作业停止成功
+```json
+HBase2ES job started.
+```
+作业已经停止
+```json
+HBase2ES job has started.
 ```
 
 # development document：

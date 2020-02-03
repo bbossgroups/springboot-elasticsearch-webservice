@@ -35,7 +35,7 @@ public class DataTranController {
 	private DataTran dataTran;
 
 	/**
-	 * 启动作业
+	 * 启动db-es同步作业
 	 * @return
 	 */
 	@RequestMapping("/scheduleDB2ESJob")
@@ -45,11 +45,30 @@ public class DataTranController {
 	}
 
 	/**
-	 * 停止作业
+	 * 停止db-es同步作业
 	 * @return
 	 */
 	@RequestMapping("/stopDB2ESJob")
 	public @ResponseBody String stopDB2ESJob(){
 		return dataTran.stopDB2ESJob();
+	}
+
+	/**
+	 * 启动hbase-es同步作业
+	 * @return
+	 */
+	@RequestMapping("/scheduleHBase2ESJob")
+	public @ResponseBody
+	String scheduleHBase2ESJob(){
+		return dataTran.scheduleHBase2ESJob();
+	}
+
+	/**
+	 * 停止作业
+	 * @return
+	 */
+	@RequestMapping("/stopHBase2ESJob")
+	public @ResponseBody String stopHBase2ESJob(){
+		return dataTran.stopHBase2ESJob();
 	}
 }
