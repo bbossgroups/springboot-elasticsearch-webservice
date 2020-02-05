@@ -15,19 +15,19 @@ package com.example.esbboss.service;
  * limitations under the License.
  */
 
-import com.example.esbboss.agent.*;
+import com.example.esbboss.agent.AgentInfoBo;
+import com.example.esbboss.agent.Buffer;
+import com.example.esbboss.agent.FixedBuffer;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.frameworkset.elasticsearch.boot.BBossESStarter;
 import org.frameworkset.tran.DataRefactor;
 import org.frameworkset.tran.DataStream;
-import org.frameworkset.tran.EsIdGenerator;
 import org.frameworkset.tran.ExportResultHandler;
 import org.frameworkset.tran.context.Context;
 import org.frameworkset.tran.db.input.es.DB2ESImportBuilder;
 import org.frameworkset.tran.hbase.HBaseExportBuilder;
 import org.frameworkset.tran.metrics.TaskMetrics;
-import org.frameworkset.tran.schedule.CallInterceptor;
 import org.frameworkset.tran.schedule.ImportIncreamentConfig;
-import org.frameworkset.tran.schedule.TaskContext;
 import org.frameworkset.tran.task.TaskCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -367,6 +367,17 @@ public class DataTran {
 
 							.setHbaseTable("AgentInfo") //指定需要同步数据的hbase表名称
 					;
+					/**
+					 * es相关配置
+					 * 可以通过addElasticsearchProperty方法添加Elasticsearch客户端配置，
+					 * 也可以直接读取application.properties文件中设置的es配置,两种方式都可以，案例中采用application.properties的方式
+					 */
+//		importBuilder.addElasticsearchProperty("elasticsearch.rest.hostNames","192.168.137.1:9200");//设置es服务器地址，更多配置参数文档：https://esdoc.bbossgroups.com/#/mongodb-elasticsearch?id=_5242-elasticsearch%e5%8f%82%e6%95%b0%e9%85%8d%e7%bd%ae
+					importBuilder.setTargetElasticsearch("default");//设置目标Elasticsearch集群数据源名称，和源elasticsearch集群一样都在application.properties文件中配置
+
+					importBuilder.setIndex("hbase233esdemo") //全局设置要目标elasticsearch索引名称
+							.setIndexType("hbase233esdemo"); //全局设值目标elasticsearch索引类型名称，如果是Elasticsearch 7以后的版本不需要配置
+
 					//FilterList和filter二选一，只需要设置一种
 //		/**
 //		 * 设置hbase检索filter
@@ -406,14 +417,6 @@ public class DataTran {
 //		importBuilder.setStartTimestamp(startTimestam);
 //		importBuilder.setEndTimestamp(endTimestamp);
 
-					/**
-					 * es相关配置
-					 */
-					importBuilder.setIndex("hbase2esdemo") //全局设置要目标elasticsearch索引名称
-							.setIndexType("hbase2esdemo"); //全局设值目标elasticsearch索引类型名称，如果是Elasticsearch 7以后的版本不需要配置
-					importBuilder.setTargetElasticsearch("default");//设置目标Elasticsearch集群数据源名称，和源elasticsearch集群一样都在application.properties文件中配置
-
-
 					//定时任务配置，
 					importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
 //					 .setScheduleDate(date) //指定任务开始执行时间：日期
@@ -421,45 +424,13 @@ public class DataTran {
 							.setPeriod(10000L); //每隔period毫秒执行，如果不设置，只执行一次
 					//定时任务配置结束
 
-					//设置任务执行拦截器，可以添加多个
-					importBuilder.addCallInterceptor(new CallInterceptor() {
-						@Override
-						public void preCall(TaskContext taskContext) {
-							System.out.println("preCall");
-						}
-
-						@Override
-						public void afterCall(TaskContext taskContext) {
-							System.out.println("afterCall");
-						}
-
-						@Override
-						public void throwException(TaskContext taskContext, Exception e) {
-							System.out.println("throwException");
-						}
-					}).addCallInterceptor(new CallInterceptor() {
-						@Override
-						public void preCall(TaskContext taskContext) {
-							System.out.println("preCall 1");
-						}
-
-						@Override
-						public void afterCall(TaskContext taskContext) {
-							System.out.println("afterCall 1");
-						}
-
-						@Override
-						public void throwException(TaskContext taskContext, Exception e) {
-							System.out.println("throwException 1");
-						}
-					});
 					//hbase表中列名，由"列族:列名"组成
 //		//设置任务执行拦截器结束，可以添加多个
 //		//增量配置开始
 ////		importBuilder.setNumberLastValueColumn("Info:id");//指定数字增量查询字段变量名称
 //		importBuilder.setDateLastValueColumn("Info:logOpertime");//手动指定日期增量查询字段变量名称
 					importBuilder.setFromFirst(true);//任务重启时，重新开始采集数据，true 重新开始，false不重新开始，适合于每次全量导入数据的情况，如果是全量导入，可以先删除原来的索引数据
-//		importBuilder.setLastValueStorePath("hbase2esdemo_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+					importBuilder.setLastValueStorePath("hbase233esdemo_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
 					//指定增量字段类型为日期类型，如果没有指定增量字段名称,则按照hbase记录时间戳进行timerange增量检索
 					importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);
 					// ImportIncreamentConfig.NUMBER_TYPE 数字类型
@@ -483,17 +454,20 @@ public class DataTran {
 					 * meta:rowkey 行key byte[]
 					 * meta:timestamp  记录时间戳
 					 */
-//		importBuilder.setEsIdField("meta:rowkey");
+					importBuilder.setEsIdField("meta:rowkey");
 					// 设置自定义id生成机制
-					importBuilder.setEsIdGenerator(new EsIdGenerator(){
-
-						@Override
-						public Object genId(Context context) throws Exception {
-							Object id = context.getMetaValue("rowkey");
-							String agentId = BytesUtils.safeTrim(BytesUtils.toString((byte[]) id, 0, PinpointConstants.AGENT_NAME_MAX_LEN));
-							return agentId;
-						}
-					});
+					//如果指定EsIdGenerator，则根据下面的方法生成文档id，
+					// 否则根据setEsIdField方法设置的字段值作为文档id，
+					// 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+//		importBuilder.setEsIdGenerator(new EsIdGenerator(){
+//
+//			@Override
+//			public Object genId(Context context) throws Exception {
+//					Object id = context.getMetaValue("rowkey");
+//					String agentId = BytesUtils.safeTrim(BytesUtils.toString((byte[]) id, 0, PinpointConstants.AGENT_NAME_MAX_LEN));
+//					return agentId;
+//			}
+//		});
 
 
 
@@ -519,10 +493,10 @@ public class DataTran {
 //		testObject.setId("testid");
 //		testObject.setName("jackson");
 //		importBuilder.addFieldValue("testObject",testObject);
-					importBuilder.addFieldValue("author","作者");
+//					importBuilder.addFieldValue("author","作者");
 
 					/**
-					 * 重新设置es数据结构
+					 * 设置es数据结构
 					 */
 					importBuilder.setDataRefactor(new DataRefactor() {
 						public void refactor(Context context) throws Exception  {
@@ -532,46 +506,31 @@ public class DataTran {
 //					context.setDrop(true);
 //					return;
 //				}
+							//获取原始的hbase记录Result对象
+//				HBaseRecord hBaseRecord = (HBaseRecord) context.getRecord();
+//				Result result = (Result) hBaseRecord.getData();
+
 							// 直接获取行key，对应byte[]类型，自行提取和分析保存在其中的数据
-							byte[] rowKey = (byte[])context.getMetaValue("rowkey");
-							String agentId = BytesUtils.safeTrim(BytesUtils.toString(rowKey, 0, PinpointConstants.AGENT_NAME_MAX_LEN));
+							String agentId = Bytes.toString((byte[])context.getMetaValue("rowkey"));
 							context.addFieldValue("agentId",agentId);
-							long reverseStartTime = BytesUtils.bytesToLong(rowKey, HBaseTables.AGENT_NAME_MAX_LEN);
-							long startTime = TimeUtils.recoveryTimeMillis(reverseStartTime);
-							context.addFieldValue("startTime",new Date(startTime));
+							Date startTime = (Date)context.getMetaValue("timestamp");
+							context.addFieldValue("startTime",startTime);
 							// 通过context.getValue方法获取hbase 列的原始值byte[],方法参数对应hbase表中列名，由"列族:列名"组成
-							byte[] serializedAgentInfo = (byte[]) context.getValue("Info:i");
-							byte[] serializedServerMetaData = (byte[]) context.getValue("Info:m");
-							byte[] serializedJvmInfo = (byte[]) context.getValue("Info:j");
-							// 通过context提供的一系列getXXXValue方法，从hbase列族中获取相应类型的数据：int,string,long,double,float,date
-//				String data = context.getStringValue("Info:i");
-							final AgentInfoBo.Builder agentInfoBoBuilder = createBuilderFromValue(serializedAgentInfo);
-							agentInfoBoBuilder.setAgentId(agentId);
-							agentInfoBoBuilder.setStartTime(startTime);
+							String serializedAgentInfo =  context.getStringValue("Info:i");
+							String serializedServerMetaData =  context.getStringValue("Info:m");
+							String serializedJvmInfo =  context.getStringValue("Info:j");
 
-							if (serializedServerMetaData != null) {
-								agentInfoBoBuilder.setServerMetaData(new ServerMetaDataBo.Builder(serializedServerMetaData).build());
-							}
-							if (serializedJvmInfo != null) {
-								agentInfoBoBuilder.setJvmInfo(new JvmInfoBo(serializedJvmInfo));
-							}
-							AgentInfo agentInfo = new AgentInfo(agentInfoBoBuilder.build());
-							context.addFieldValue("agentInfo",agentInfo);
-							context.addFieldValue("author","duoduo");
-							context.addFieldValue("title","解放");
+							context.addFieldValue("serializedAgentInfo",serializedAgentInfo);
+							context.addFieldValue("serializedServerMetaData",serializedServerMetaData);
+							context.addFieldValue("serializedJvmInfo",serializedJvmInfo);
 							context.addFieldValue("subtitle","小康");
+							context.addFieldValue("collectTime",new Date());
 
-//				context.addIgnoreFieldMapping("title");
-							//上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
-//				context.addIgnoreFieldMapping("author");
 
-//				//修改字段名称title为新名称newTitle，并且修改字段的值
-//				context.newName2ndData("title","newTitle",(String)context.getValue("title")+" append new Value");
-							context.addIgnoreFieldMapping("subtitle");
 //				/**
 //				 * 获取ip对应的运营商和区域信息
 //				 */
-//				Map ipInfo = (Map)context.getValue("ipInfo");
+//				IpInfo ipInfo = context.getIpInfo("Info:agentIp");
 //				if(ipInfo != null)
 //					context.addFieldValue("ipinfo", SimpleStringUtil.object2json(ipInfo));
 //				else{
@@ -582,26 +541,12 @@ public class DataTran {
 //				context.addFieldValue("logOpertime",optime);
 //				context.addFieldValue("collecttime",new Date());
 
-							/**
-							 //关联查询数据,单值查询
-							 Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
-							 "select * from head where billid = ? and othercondition= ?",
-							 context.getIntegerValue("billid"),"otherconditionvalue");//多个条件用逗号分隔追加
-							 //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
-							 context.addFieldValue("headdata",headdata);
-							 //关联查询数据,多值查询
-							 List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
-							 "select * from facedata where billid = ?",
-							 context.getIntegerValue("billid"));
-							 //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
-							 context.addFieldValue("facedatas",facedatas);
-							 */
 						}
 					});
 					//映射和转换配置结束
 
 					/**
-					 * 一次、作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能，作业完毕后关闭线程池
+					 * 作业创建一个内置的线程池，实现多线程并行数据导入elasticsearch功能
 					 */
 					importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
 					importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
@@ -610,10 +555,37 @@ public class DataTran {
 					importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 //		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false，不打印响应报文将大大提升性能，只有在调试需要的时候才打开，log日志级别同时要设置为INFO
 //		importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认true，如果不需要响应报文将大大提升处理速度
-					importBuilder.setPrintTaskLog(true);
+					importBuilder.setPrintTaskLog(true); //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
 					importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false
 					importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
 
+					/**
+					 * 设置任务执行情况回调接口
+					 */
+					importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+						@Override
+						public void success(TaskCommand<String,String> taskCommand, String result) {
+							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
+							logger.info(taskMetrics.toString());
+						}
+
+						@Override
+						public void error(TaskCommand<String,String> taskCommand, String result) {
+							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
+							logger.info(taskMetrics.toString());
+						}
+
+						@Override
+						public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
+							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
+							logger.info(taskMetrics.toString());
+						}
+
+						@Override
+						public int getMaxRetry() {
+							return 0;
+						}
+					});
 					/**
 					 * 执行es数据导入数据库表操作
 					 */
