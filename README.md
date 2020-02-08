@@ -1,6 +1,6 @@
 # Demo Introduce 
 
-Web service demo based on spring boot 2 and Elasticsearch bboss client 5.3.8，Verify the following elasticsearch functions:
+Web service demo based on spring boot 1.x,2.x and Elasticsearch bboss client，the following elasticsearch operation:
 
 1. Determine whether the indice exists
 2. Delete existing indice
@@ -8,6 +8,8 @@ Web service demo based on spring boot 2 and Elasticsearch bboss client 5.3.8，V
 4. Get the indice definition structure
 5. Create/modify/delete/query index documents
 6. search documents pararrel
+7. database-elasticsearch数据同步
+8. hbase-elasticsearch数据同步
 
 # Demo build 
 
@@ -27,9 +29,12 @@ mvn clean package
 
 # Demo run 
 
-First run elasticsearch 5 or elasticsearch 6.Then run the demo:
+First run elasticsearch 5 or elasticsearch 6 or elasticsearch 7，run hbase and database for hbase-elasticsearch and database-elasticsearch. 
+
+Then run the demo:
 
 ```
+mvn clean install
 cd target
 
 java -jar es_bboss_web-0.0.1-SNAPSHOT.jar
