@@ -13,7 +13,7 @@ Web service demo based on spring boot 1.x,2.x and Elasticsearch bboss client，i
 
 # Demo build 
 
-Modify the es address in es_bboss_web\src\main\resources\application.properties file:
+Modify the es address in springboot-elasticsearch\src\main\resources\application.properties file:
 
 ```java
 spring.elasticsearch.bboss.elasticsearch.rest.hostNames=192.168.137.1:9200
@@ -105,12 +105,12 @@ Return the following search results in the browser to indicate successful execut
 ```
 # 本demo还包含两个数据同步的案例：
 - DB-Elasticsearch数据同步
-- Hbase-Elasticsearch数据同步（基于hbase 1.3.0开发，如果需要对接其他版本，需要调整pom.xml中的hbase-shaded-client maven坐标版本号）
+- Hbase-Elasticsearch数据同步（基于hbase 2.2.3开发，如果需要对接其他版本，需要调整pom.xml中的hbase-shaded-client maven坐标版本号）
 ```xml
 	    <dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-shaded-client</artifactId>
-			<version>1.2.4</version>
+			<version>2.2.3</version>
 		</dependency>
 ```
 使用方法如下：
