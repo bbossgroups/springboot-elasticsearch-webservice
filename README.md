@@ -1,8 +1,8 @@
 # Demo Introduce 
 
-Web service demo based on spring boot 1.x,2.x and Elasticsearch bboss client，the following elasticsearch operation:
+Web service demo based on spring boot 1.x,2.x and Elasticsearch bboss client，include following elasticsearch operations:
 
-1. Determine whether the indice exists
+1. check indice exists
 2. Delete existing indice
 3. Create indice by dsl
 4. Get the indice definition structure
