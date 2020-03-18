@@ -23,7 +23,7 @@
                         },
                         "agentStarttimezh": {
                             "type": "date",
-                            "format":"yyyy-MM-dd HH:mm:ss"
+                            "format":"yyyy-MM-dd HH:mm:ss.SSS||yyyy-MM-dd'T'HH:mm:ss.SSS||yyyy-MM-dd HH:mm:ss||epoch_millis"
                         },
                         "applicationName": {
                             "type": "text",
