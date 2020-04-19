@@ -46,7 +46,13 @@ java -jar es_bboss_web-0.0.1-SNAPSHOT.jar
 
 Enter the following address in the browser to perform the add, delete, modify and search operations:
 
+Elasticsearch 7以下版本
+
 http://localhost:808/testBBossIndexCrud
+
+Elasticsearch 7及以上版本
+
+http://localhost:808/testBBossIndexCrud7
 
 Return the following search results in the browser to indicate successful execution:
 

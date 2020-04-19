@@ -18,6 +18,7 @@ package com.example.esbboss.controller;
 
 import com.example.esbboss.entity.DemoSearchResult;
 import com.example.esbboss.service.DocumentCRUD;
+import com.example.esbboss.service.DocumentCRUD7;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +35,41 @@ public class EsController {
 
     @Autowired
     private DocumentCRUD documentCRUD;
-
+    @Autowired
+    private DocumentCRUD7 documentCRUD7;
     @RequestMapping("/health")
     public @ResponseBody String health() {
         return "ok";
     }
+    @RequestMapping("/testBBossIndexCrud7")
+    public @ResponseBody
+    DemoSearchResult testBBossIndexCrud7()  {
+        documentCRUD7.dropAndCreateAndGetIndice();
+        documentCRUD7.addAndUpdateDocument();
+        DemoSearchResult demoSearchResult = documentCRUD7.search();
+        documentCRUD7.searchAllPararrel();
+//        documentCRUD.deleteDocuments();
+        return demoSearchResult;
+    }
+
+    @RequestMapping("/testBBossSearch7")
+    public @ResponseBody
+    DemoSearchResult testBBossSearch7()  {
+//        documentCRUD.dropAndCreateAndGetIndice();
+//        documentCRUD.addAndUpdateDocument();
+        try {
+            DemoSearchResult demoSearchResult = documentCRUD7.search();
+//        documentCRUD.searchAllPararrel();
+//        documentCRUD.deleteDocuments();
+            return demoSearchResult;
+        }
+        catch (Exception e){
+            logger.error("",e);
+            throw  e;
+        }
+    }
+
+
     @RequestMapping("/testBBossIndexCrud")
     public @ResponseBody
     DemoSearchResult testBBossIndexCrud()  {
