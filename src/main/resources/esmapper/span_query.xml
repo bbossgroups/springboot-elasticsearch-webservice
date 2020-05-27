@@ -1,0 +1,111 @@
+<properties>
+
+    <!--***SpanQuery测试案例***-->
+
+    <!--创建索引-->
+    <property name="createArticleIndice">
+        <![CDATA[{
+            "settings" : {
+                "number_of_shards" : 1,
+                "number_of_replicas" : 1
+            },
+            "mappings": {
+                "properties": {
+                    "maincontent": {
+                        "type": "text"
+                    }
+                }
+            }
+        }]]>
+    </property>
+
+    <!--添加索引数据-->
+    <property name="bulkInsertArticleData">
+        <![CDATA[
+            {"index" : {"_index" : "article" }}
+            {"maincontent":"the quick red fox jumps over the sleepy cat"}
+            {"index" : {"_index" : "article" }}
+            {"maincontent":"the quick brown fox jumps over the lazy dog"}
+        ]]>
+    </property>
+
+    <!--测试SpanTermQuery-->
+    <property name="testSpanTermQuery">
+        <![CDATA[{
+            "query": {
+                "span_term": {
+                    "maincontent": {
+                        "value": #[spanTermValue]
+                    }
+                }
+            }
+        }]]>
+    </property>
+
+    <!--测试SpanTermQuery-->
+    <property name="testSpanNearQuery">
+        <![CDATA[{
+            "query": {
+                "span_near": {
+                "clauses": [
+                    {
+                        "span_term": {
+                            "maincontent": {
+                                "value": #[spanTermValue1]
+                            }
+                        }
+                    },
+                    {
+                        "span_term": {
+                            "maincontent": {
+                              "value": #[spanTermValue2]
+                            }
+                        }
+                    }
+                ],
+                "slop": #[slop],
+                "in_order": true
+                }
+            }
+        }]]>
+    </property>
+
+    <!--测试SpanNotQuery-->
+    <property name="testSpanNotQuery ">
+        <![CDATA[{
+          "query": {
+            "span_not": {
+              "include": {
+                "span_near": {
+                  "clauses": [
+                    {
+                      "span_term": {
+                        "maincontent": {
+                          "value": #[spanTermValue1]
+                        }
+                      }
+                    },
+                    {
+                      "span_term": {
+                        "maincontent": {
+                          "value": #[spanTermValue2]
+                        }
+                      }
+                    }
+                  ],
+                  "slop": #[slop],
+                  "in_order": true
+                }
+              },
+              "exclude": {
+                "span_term": {
+                  "maincontent": {
+                    "value": #[spanNotValue]
+                  }
+                }
+              }
+            }
+          }
+        }]]>
+    </property>
+</properties>

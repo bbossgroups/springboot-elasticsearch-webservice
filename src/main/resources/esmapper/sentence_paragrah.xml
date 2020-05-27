@@ -1,0 +1,171 @@
+<properties>
+
+    <!--***同段/同句搜索测试案例***-->
+
+    <property name="_analyzesample1">
+        <![CDATA[{
+          "text": ["<p>java python javascript</p><p>oracle mysql sqlserver</p>"],
+          "analyzer": "simple1_mainContent"
+        }]]>
+    </property>
+
+    <property name="_analyzesample2">
+        <![CDATA[{
+          "text": ["<p>java python javascript</p><p>oracle mysql sqlserver</p>"],
+          "analyzer": "simple2_mainContent"
+        }]]>
+    </property>
+    <!--创建索引-->
+    <property name="createSample1Indice">
+        <![CDATA[{
+            "settings": {
+                "number_of_replicas": 0,
+                "number_of_shards": 1,
+                "analysis": {
+                  "analyzer": {
+                    "simple1_mainContent": {
+                      "type": "custom",
+                      "char_filter": [
+                        "sentence_paragrah_mapping",
+                        "html_strip"
+                      ],
+                      "tokenizer": "ik_max_word"
+                    }
+                  },
+                  "char_filter": {
+                    "sentence_paragrah_mapping": {
+                      "type": "mapping",
+                      "mappings": [
+                            @"""<h1> => \u0020paragraph\u0020""",
+                            @"""</h1> => \u0020sentence\u0020paragraph\u0020""",
+                            @"""<h2> => \u0020paragraph\u0020""",
+                            @"""</h2> => \u0020sentence\u0020paragraph\u0020""",
+                            @"""<p> => \u0020paragraph\u0020""",
+                            @"""</p> => \u0020sentence\u0020paragraph\u0020""",
+                            @"""! => \u0020sentence\u0020""",
+                            @"""? => \u0020sentence\u0020""",
+                            @"""。=> \u0020sentence\u0020""",
+                            @"""？=> \u0020sentence\u0020""",
+                            @"""！=> \u0020sentence\u0020"""
+                      ]
+                    }
+                  }
+                }
+                },
+                "mappings": {
+                    "properties": {
+                      "mainContent": {
+                        "type": "text",
+                        "analyzer": "simple1_mainContent",
+                        "search_analyzer": "ik_smart"
+                     }
+                }
+            }
+        }]]>
+    </property>
+
+    <!--添加索引数据-->
+    <property name="bulkSample1Data">
+        <![CDATA[
+            {"index" : {"_index" : "sample1" }}
+            {"mainContent":"<p>java python javascript</p><p>oracle mysql sqlserver</p>"}
+        ]]>
+    </property>
+
+    <!--同段搜索-->
+    <property name="testParagraphQuery">
+        <![CDATA[{
+            "query": {
+                "span_not": {
+                  "include": {
+                    "span_near": {
+                      "clauses": [
+                        {
+                          "span_term": {
+                            "mainContent": {
+                              "value": #[spanTermValue1]
+                            }
+                          }
+                        },
+                        {
+                          "span_term": {
+                            "mainContent": {
+                              "value": #[spanTermValue2]
+                            }
+                          }
+                        }
+                      ],
+                      "slop": #[slop],
+                      "in_order": false
+                    }
+                  },
+                  "exclude": {
+                    "span_term": {
+                      "mainContent": {
+                        "value": #[queryType]
+                      }
+                    }
+                  }
+                }
+            }
+        }]]>
+    </property>
+
+    <!--创建索引-->
+    <property name="createSample2Indice">
+        <![CDATA[{
+            "settings": {
+                "number_of_replicas": 0,
+                "number_of_shards": 1,
+                "analysis": {
+                  "analyzer": {
+                    "simple2_mainContent": {
+                      "type": "custom",
+                      "char_filter": [
+                        "sentence_paragrah_mapping"
+                      ],
+                      "tokenizer": "ik_max_word"
+                    }
+                  },
+                  "char_filter": {
+                    "sentence_paragrah_mapping": {
+                      "type": "mapping",
+                      "mappings": [
+                            @"""<h1> => \u0020paragraph\u0020""",
+                            @"""</h1> => \u0020sentence\u0020paragraph\u0020""",
+                            @"""<h2> => \u0020paragraph\u0020""",
+                            @"""</h2> => \u0020sentence\u0020paragraph\u0020""",
+                            @"""<p> => \u0020paragraph\u0020""",
+                            @"""</p> => \u0020sentence\u0020paragraph\u0020""",
+                            @"""! => \u0020sentence\u0020""",
+                            @"""? => \u0020sentence\u0020""",
+                            @"""。=> \u0020sentence\u0020""",
+                            @"""？=> \u0020sentence\u0020""",
+                            @"""\n => \u0020sentence\u0020paragraph\u0020""",
+                            @"""！=> \u0020sentence\u0020"""
+                      ]
+                    }
+                  }
+                }
+                },
+                "mappings": {
+                "properties": {
+                  "mainContent": {
+                    "type": "text",
+                    "analyzer": "simple2_mainContent",
+                    "search_analyzer": "ik_smart"
+                  }
+                }
+            }
+        }]]>
+    </property>
+
+    <!--添加索引数据-->
+    <property name="bulkSample2Data">
+        <![CDATA[
+            {"index" : {"_index" : "sample2" }}
+            {"mainContent":"java python javascript\noracle mysql sqlserver"}
+        ]]>
+    </property>
+
+</properties>
