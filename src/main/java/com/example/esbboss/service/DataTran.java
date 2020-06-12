@@ -52,7 +52,8 @@ public class DataTran {
 	private BBossESStarter bbossESStarter;
 	private DB2ESImportBuilder db2ESImportBuilder;
 	private DataStream dataStream;
-
+//	@Autowired
+//	private BBossStarter bbossStarter;
 
 	public String stopDB2ESJob(){
 		if(dataStream != null) {
@@ -188,6 +189,8 @@ public class DataTran {
 					importBuilder.setLastValueStorePath("logtable_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
 //		importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
 					importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
+//					importBuilder.setStatusDbname("default");//default是一个数据库datasource的名称，具体配置参考application.properties文件内容：
+
 					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 					try {
 						Date date = format.parse("2000-01-01");
