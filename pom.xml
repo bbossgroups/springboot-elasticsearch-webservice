@@ -123,7 +123,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.40</version>
+			<version>8.0.16</version>
 		</dependency>
 		<!--导入db-elasticsearch数据同步依赖包结束-->
 	</dependencies>
