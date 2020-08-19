@@ -73,10 +73,10 @@ public class EsController {
     @RequestMapping("/testBBossIndexCrud")
     public @ResponseBody
     DemoSearchResult testBBossIndexCrud()  {
-        documentCRUD.dropAndCreateAndGetIndice();
-        documentCRUD.addAndUpdateDocument();
+    	documentCRUD7.dropAndCreateAndGetIndice();
+    	documentCRUD7.addAndUpdateDocument();
         DemoSearchResult demoSearchResult = documentCRUD.search();
-        documentCRUD.searchAllPararrel();
+        documentCRUD7.searchAllPararrel();
 //        documentCRUD.deleteDocuments();
         return demoSearchResult;
     }
@@ -87,7 +87,7 @@ public class EsController {
 //        documentCRUD.dropAndCreateAndGetIndice();
 //        documentCRUD.addAndUpdateDocument();
         try {
-            DemoSearchResult demoSearchResult = documentCRUD.search();
+            DemoSearchResult demoSearchResult = documentCRUD7.search();
 //        documentCRUD.searchAllPararrel();
 //        documentCRUD.deleteDocuments();
             return demoSearchResult;
