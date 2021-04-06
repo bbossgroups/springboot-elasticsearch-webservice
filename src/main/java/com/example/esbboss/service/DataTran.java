@@ -59,7 +59,7 @@ public class DataTran {
 		if(dataStream != null) {
 			synchronized (this) {
 				if (dataStream != null) {
-					dataStream.destroy();
+					dataStream.destroy(true);
 					dataStream = null;
 					db2ESImportBuilder = null;
 					return "db2ESImport job stopped.";
@@ -316,7 +316,7 @@ public class DataTran {
 		if(hbase2esDataStream != null) {
 			synchronized (this) {
 				if (hbase2esDataStream != null) {
-					hbase2esDataStream.destroy();
+					hbase2esDataStream.destroy(true);
 					hbase2esDataStream = null;
 					hBaseExportBuilder = null;
 					return "HBase2ES job stopped.";
