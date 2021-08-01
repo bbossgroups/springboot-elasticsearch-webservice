@@ -190,7 +190,7 @@ public class DataTran {
 //		importBuilder.setLastValueStoreTableName("logs");//记录上次采集的增量字段值的表，可以不指定，采用默认表名increament_tab
 					importBuilder.setLastValueType(ImportIncreamentConfig.TIMESTAMP_TYPE);//如果没有指定增量查询字段名称，则需要指定字段类型：ImportIncreamentConfig.NUMBER_TYPE 数字类型
 //					importBuilder.setStatusDbname("default");//default是一个数据库datasource的名称，具体配置参考application.properties文件内容：
-
+					importBuilder.setAsynFlushStatusInterval(10000);
 					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 					try {
 						Date date = format.parse("2000-01-01");
