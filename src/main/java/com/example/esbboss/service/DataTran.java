@@ -506,8 +506,7 @@ public class DataTran {
 //					return;
 //				}
 							//获取原始的hbase记录Result对象
-//				HBaseRecord hBaseRecord = (HBaseRecord) context.getRecord();
-//				Result result = (Result) hBaseRecord.getData();
+//				Result result = (Result)  context.getRecord();
 
 							// 直接获取行key，对应byte[]类型，自行提取和分析保存在其中的数据
 							String agentId = Bytes.toString((byte[])context.getMetaValue("rowkey"));
