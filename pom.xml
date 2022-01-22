@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>com.bbossgroups.plugins</groupId>
 			<artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-			<version>6.3.9</version>
+			<version>6.5.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>slf4j-log4j12</artifactId>
@@ -60,7 +60,7 @@
 		<dependency>
 			<groupId>com.bbossgroups.plugins</groupId>
 			<artifactId>bboss-elasticsearch-rest-jdbc</artifactId>
-			<version>6.3.9</version>
+			<version>6.5.0</version>
 			<exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -71,7 +71,7 @@
 		<dependency>
 			<groupId>com.bbossgroups.plugins</groupId>
 			<artifactId>bboss-elasticsearch-rest-hbase</artifactId>
-			<version>6.3.9</version>
+			<version>6.5.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>slf4j-log4j12</artifactId>
@@ -82,7 +82,7 @@
 		<dependency>
 			<groupId>com.bbossgroups</groupId>
 			<artifactId>bboss-spring-boot-starter</artifactId>
-			<version>5.9.0</version>
+			<version>5.9.1</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>slf4j-log4j12</artifactId>
@@ -120,7 +120,7 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<!--<version>5.1.40</version>-->
-			<version>8.0.16</version>
+			<version>8.0.28</version>
 		</dependency>
 		<!--导入db-elasticsearch数据同步依赖包结束 8.0.16-->
 	</dependencies>
