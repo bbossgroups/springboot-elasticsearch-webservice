@@ -27,7 +27,9 @@ import org.frameworkset.tran.context.Context;
 import org.frameworkset.tran.db.input.es.DB2ESImportBuilder;
 import org.frameworkset.tran.hbase.HBaseExportBuilder;
 import org.frameworkset.tran.metrics.TaskMetrics;
+import org.frameworkset.tran.schedule.CallInterceptor;
 import org.frameworkset.tran.schedule.ImportIncreamentConfig;
+import org.frameworkset.tran.schedule.TaskContext;
 import org.frameworkset.tran.task.TaskCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,22 +153,24 @@ public class DataTran {
 					//定时任务配置结束
 //
 //		//设置任务执行拦截器，可以添加多个，定时任务每次执行的拦截器
-//		importBuilder.addCallInterceptor(new CallInterceptor() {
-//			@Override
-//			public void preCall(TaskContext taskContext) {
-//				System.out.println("preCall");
-//			}
-//
-//			@Override
-//			public void afterCall(TaskContext taskContext) {
-//				System.out.println("afterCall");
-//			}
-//
-//			@Override
-//			public void throwException(TaskContext taskContext, Exception e) {
-//				System.out.println("throwException");
-//			}
-//		}).addCallInterceptor(new CallInterceptor() {
+		importBuilder.addCallInterceptor(new CallInterceptor() {
+			@Override
+			public void preCall(TaskContext taskContext) {
+			}
+
+			@Override
+			public void afterCall(TaskContext taskContext) {
+				if(taskContext != null)
+					logger.info(taskContext.getJobTaskMetrics().toString());
+			}
+
+			@Override
+			public void throwException(TaskContext taskContext, Exception e) {
+				if(taskContext != null)
+					logger.info(taskContext.getJobTaskMetrics().toString(),e);
+			}
+		});
+//		.addCallInterceptor(new CallInterceptor() {
 //			@Override
 //			public void preCall(TaskContext taskContext) {
 //				System.out.println("preCall 1");
@@ -249,7 +253,7 @@ public class DataTran {
 					 */
 					importBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
 					importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
-					importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+					importBuilder.setThreadCount(6);//设置批量导入线程池工作线程数量
 					importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
 					importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 					importBuilder.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
