@@ -120,7 +120,8 @@ Return the following search results in the browser to indicate successful execut
 		</dependency>
 ```
 使用方法如下：
-# run the db-elasticsearch data tran job
+# 1.运行基本db-elasticsearch作业
+## 1.1 run the db-elasticsearch data tran job
 Enter the following address in the browser to run the db-elasticsearch data tran job:
 
 http://localhost:808/scheduleDB2ESJob
@@ -136,7 +137,7 @@ db2ESImport job started.
 ```json
 db2ESImport job has started.
 ```
-# stop the db-elasticsearch data tran job
+## 1.2 stop the db-elasticsearch data tran job
 Enter the following address in the browser to stop the db-elasticsearch data tran job:
 
 http://localhost:808/stopDB2ESJob
@@ -148,10 +149,10 @@ db2ESImport job started.
 ```
 作业已经停止
 ```json
-db2ESImport job has started.
+db2ESImport job has been stopped.
 ```
-
-# run the hbase-elasticsearch data tran job
+# 2.运行基本hbase-elasticsearch作业
+## 2.1 run the hbase-elasticsearch data tran job
 Enter the following address in the browser to run the hbase-elasticsearch data tran job:
 
 http://localhost:808/scheduleHBase2ESJob
@@ -167,7 +168,7 @@ HBase2ES job started.
 ```json
 HBase2ES job has started.
 ```
-# stop the db-elasticsearch data tran job
+## 2.2 stop the db-elasticsearch data tran job
 Enter the following address in the browser to stop the hbase-elasticsearch data tran job:
 
 http://localhost:808/stopHBase2ESJob
@@ -179,9 +180,149 @@ HBase2ES job started.
 ```
 作业已经停止
 ```json
-HBase2ES job has started.
+HBase2ES job has been stopped.
 ```
 
-# development document：
+# 3.运行控制作业调度的db-elasticsearch作业
+## 3.1 run the db-elasticsearch data tran job
+Enter the following address in the browser to run the db-elasticsearch data tran job:
+创建需要人工手动暂停才能暂停作业，作业启动后持续运行，当暂停后需执行resume作业才能继续调度执行
+http://localhost:808/schedulecontrol/scheduleDB2ESJob?autoPause=false
+
+创建具备暂停功能的数据同步作业，调度执行后将作业自动标记为暂停状态，等待下一个resumeShedule指令才继续允许作业调度执行，执行后再次自动暂停
+http://localhost:808/schedulecontrol/scheduleDB2ESJob?autoPause=true
+
+Return the following results in the browser to show successful execution:
+
+作业启动成功
+```json
+db2ESImport job started.
+```
+
+作业已经启动
+```json
+db2ESImport job has started.
+```
+## 3.2 stop the db-elasticsearch data tran job
+Enter the following address in the browser to stop the db-elasticsearch data tran job:
+
+http://localhost:808/schedulecontrol/stopDB2ESJob
+
+Return the following search results in the browser to show successful execution:
+作业停止成功
+```json
+db2ESImport job stopped.
+```
+作业已经停止
+```json
+db2ESImport job has been stopped.
+```
+## 3.3 Pause schedule the db-elasticsearch data tran job
+Enter the following address in the browser to Pause the db-elasticsearch data tran job:
+
+http://localhost:808/schedulecontrol/pauseScheduleDB2ESJob
+
+Return the following search results in the browser to show successful execution:
+作业暂停成功
+```json
+db2ESImport job schedule paused.
+```
+作业已经暂停
+```json
+b2ESImport job schedule is not scheduled, Ignore pauseScheduleJob command.
+```
+作业已经停止
+```json
+db2ESImport job has been stopped.
+```
+
+## 3.4 Resume schedule the db-elasticsearch data tran job
+Enter the following address in the browser to Resume the db-elasticsearch data tran job:
+
+http://localhost:808/schedulecontrol/resumeScheduleDB2ESJob
+
+Return the following search results in the browser to show successful execution:
+作业继续调度成功
+```json
+db2ESImport job schedule resume to continue.
+```
+作业已经在调度执行提示
+```json
+db2ESImport job schedule is not paused, Ignore resumeScheduleJob command.
+```
+作业已经停止
+```json
+db2ESImport job has been stopped.
+```
+
+# 4.运行控制作业调度的基本hbase-elasticsearch作业
+## 4.1 run the hbase-elasticsearch data tran job
+Enter the following address in the browser to run the hbase-elasticsearch data tran job:
+
+http://localhost:808/schedulecontrol/scheduleHBase2ESJob
+
+Return the following results in the browser to show successful execution:
+
+作业启动成功
+```json
+HBase2ES job started.
+```
+
+作业已经启动
+```json
+HBase2ES job has started.
+```
+## 4.2 stop the hbase-elasticsearch data tran job
+Enter the following address in the browser to stop the hbase-elasticsearch data tran job:
+
+http://localhost:808/schedulecontrol/stopHBase2ESJob
+
+Return the following search results in the browser to show successful execution:
+作业停止成功
+```json
+HBase2ES job started.
+```
+作业已经停止
+```json
+HBase2ES job has been stopped.
+```
+## 4.3 Pause schedule the hbase-elasticsearch data tran job
+Enter the following address in the browser to Pause the hbase-elasticsearch data tran job:
+
+http://localhost:808/schedulecontrol/pauseScheduleHBase2ESJob
+
+Return the following search results in the browser to show successful execution:
+作业暂停成功
+```json
+HBase2ES job schedule paused.
+```
+作业已经暂停
+```json
+HBase2ES job schedule is not scheduled, Ignore pauseScheduleJob command.
+```
+作业已经停止
+```json
+HBase2ES job has been stopped.
+```
+
+## 4.4 Resume schedule the hbase-elasticsearch data tran job
+Enter the following address in the browser to Resume the hbase-elasticsearch data tran job:
+
+http://localhost:808/schedulecontrol/resumeScheduleHBase2ESJob
+
+Return the following search results in the browser to show successful execution:
+作业继续调度成功
+```json
+HBase2ES job schedule resume to continue.
+```
+作业已经在调度执行
+```json
+HBase2ES job schedule is not paused, Ignore resumeScheduleJob command.
+```
+作业已经停止
+```json
+HBase2ES job has been stopped.
+```
+# Development document：
 
 https://esdoc.bbossgroups.com/#/development
