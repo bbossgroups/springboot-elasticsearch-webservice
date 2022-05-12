@@ -20,13 +20,16 @@ import com.example.esbboss.agent.Buffer;
 import com.example.esbboss.agent.FixedBuffer;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.frameworkset.elasticsearch.boot.BBossESStarter;
+import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.tran.DataRefactor;
 import org.frameworkset.tran.DataStream;
 import org.frameworkset.tran.ExportResultHandler;
 import org.frameworkset.tran.context.Context;
 import org.frameworkset.tran.db.input.es.DB2ESImportBuilder;
 import org.frameworkset.tran.hbase.HBaseExportBuilder;
+import org.frameworkset.tran.input.file.*;
 import org.frameworkset.tran.metrics.TaskMetrics;
+import org.frameworkset.tran.output.es.FileLog2ESImportBuilder;
 import org.frameworkset.tran.schedule.CallInterceptor;
 import org.frameworkset.tran.schedule.DefaultScheduleAssert;
 import org.frameworkset.tran.schedule.ImportIncreamentConfig;
@@ -37,8 +40,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * <p>Description: </p>
@@ -54,10 +59,419 @@ public class AutoschedulePauseDataTran {
 	@Autowired
 	private BBossESStarter bbossESStarter;
 	private DB2ESImportBuilder db2ESImportBuilder;
+	private FileLog2ESImportBuilder fileLog2ESImportBuilder;
 	private DataStream dataStream;
-//	@Autowired
-//	private BBossStarter bbossStarter;
+	private DataStream filedataStream;
+	public String stopfile2es(){
+		if(filedataStream != null) {
+			synchronized (this) {
+				if (filedataStream != null) {
+					filedataStream.destroy(true);
+					filedataStream = null;
+					fileLog2ESImportBuilder = null;
+					return "file2es job stopped.";
+				} else {
+					return "file2es job has stopped.";
+				}
+			}
+		}
+		else {
+			return "file2es job has stopped.";
+		}
+	}
+	public String pauseFile2es(){
+		return this.pause(filedataStream,"file2es");
+	}
 
+	public String pause(DataStream dataStream,String jobtype){
+		if(dataStream != null) {
+			synchronized (this) {
+				if (dataStream != null) {
+					boolean ret = dataStream.pauseSchedule();//如果db2es作业采用的是调度后自动暂停机制，所以ret始终返回false
+					if(ret) {
+						return jobtype + " job schedule paused.";
+					}
+					else{
+						return jobtype + " job schedule is not scheduled, Ignore pauseScheduleJob command.";
+					}
+				} else {
+					return jobtype + " job has stopped.";
+				}
+			}
+		}
+		else {
+			return jobtype + " job has stopped.";
+		}
+	}
+	public String resumeFile2es(){
+		return this.resume(filedataStream,"file2es");
+	}
+	public String resume(DataStream dataStream,String jobtype){
+		if(dataStream != null) {
+			synchronized (this) {
+				if (dataStream != null) {
+
+					boolean ret = dataStream.resumeSchedule();
+					if(ret) {
+						return jobtype + " job schedule resume to continue.";
+					}
+					else{
+						return jobtype + " job schedule is not paused, Ignore resumeScheduleJob command.";
+					}
+				} else {
+					return jobtype + " job has stopped.";
+				}
+			}
+		}
+		else {
+			return jobtype + " job has stopped.";
+		}
+	}
+	public String startfile2es(boolean autoPause){
+		if(fileLog2ESImportBuilder == null){
+			synchronized (this){
+				if(fileLog2ESImportBuilder != null){
+					return "file2es job has started.";
+				}
+				fileLog2ESImportBuilder = new FileLog2ESImportBuilder();
+				fileLog2ESImportBuilder.setBatchSize(40)//设置批量入库的记录数
+						.setFetchSize(1000);//设置按批读取文件行数
+				//设置强制刷新检测空闲时间间隔，单位：毫秒，在空闲flushInterval后，还没有数据到来，强制将已经入列的数据进行存储操作，默认8秒,为0时关闭本机制
+				fileLog2ESImportBuilder.setFlushInterval(10000l);
+			//		fileLog2ESImportBuilder.setSplitFieldName("@message");
+			//		fileLog2ESImportBuilder.setSplitHandler(new SplitHandler() {
+			//			@Override
+			//			public List<KeyMap<String, Object>> splitField(TaskContext taskContext,
+			//														   Record record, Object splitValue) {
+			//				Map<String,Object > data = (Map<String, Object>) record.getData();
+			//				List<KeyMap<String, Object>> splitDatas = new ArrayList<>();
+			//				//模拟将数据切割为10条记录
+			//				for(int i = 0 ; i < 10; i ++){
+			//					KeyMap<String, Object> d = new KeyMap<String, Object>();
+			//					d.put("message",i+"-"+(String)data.get("@message"));
+			////					d.setKey(SimpleStringUtil.getUUID());//如果是往kafka推送数据，可以设置推送的key
+			//					splitDatas.add(d);
+			//				}
+			//				return splitDatas;
+			//			}
+			//		});
+				fileLog2ESImportBuilder.addFieldMapping("@message","message");
+				FileImportConfig config = new FileImportConfig();
+
+				config.setCharsetEncode("GB2312");
+				//.*.txt.[0-9]+$
+				//[17:21:32:388]
+			//		config.addConfig(new FileConfig("D:\\ecslog",//指定目录
+			//				"error-2021-03-27-1.log",//指定文件名称，可以是正则表达式
+			//				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+			//				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+			//				.setMaxBytes(1048576)//控制每条日志的最大长度，超过长度将被截取掉
+			//				//.setStartPointer(1000l)//设置采集的起始位置，日志内容偏移量
+			//				.addField("tag","error") //添加字段tag到记录中
+			//				.setExcludeLines(new String[]{"\\[DEBUG\\]"}));//不采集debug日志
+
+			//		config.addConfig(new FileConfig("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\",//指定目录
+			//				"es.log",//指定文件名称，可以是正则表达式
+			//				"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+			//				.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+			//				.addField("tag","elasticsearch")//添加字段tag到记录中
+			//				.setEnableInode(false)
+			////				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+			//				//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+			//		);
+			//		config.addConfig(new FileConfig("D:\\workspace\\bbossesdemo\\filelog-elasticsearch\\",//指定目录
+			//						new FileFilter() {
+			//							@Override
+			//							public boolean accept(File dir, String name, FileConfig fileConfig) {
+			//								//判断是否采集文件数据，返回true标识采集，false 不采集
+			//								return name.equals("es.log");
+			//							}
+			//						},//指定文件过滤器
+			//						"^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+			//						.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+			//						.addField("tag","elasticsearch")//添加字段tag到记录中
+			//						.setEnableInode(false)
+			////				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+			//				//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+			//		);
+
+
+				config.addConfig(new FileConfig().setSourcePath("D:\\logs")//指定目录
+								.setFileHeadLineRegular("^\\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3}\\]")//指定多行记录的开头识别标记，正则表达式
+								.setFileFilter(new FileFilter() {
+									@Override
+									public boolean accept(FilterFileInfo fileInfo, FileConfig fileConfig) {
+										//判断是否采集文件数据，返回true标识采集，false 不采集
+										return fileInfo.getFileName().equals("metrics-report.log");
+									}
+								})//指定文件过滤器
+								.setCloseEOF(false)//已经结束的文件内容采集完毕后关闭文件对应的采集通道，后续不再监听对应文件的内容变化
+								.addField("tag","elasticsearch")//添加字段tag到记录中
+								.setEnableInode(false)
+						//				.setIncludeLines(new String[]{".*ERROR.*"})//采集包含ERROR的日志
+						//.setExcludeLines(new String[]{".*endpoint.*"}))//采集不包含endpoint的日志
+				);
+
+			//		config.addConfig("E:\\ELK\\data\\data3",".*.txt","^[0-9]{4}-[0-9]{2}-[0-9]{2}");
+				/**
+				 * 启用元数据信息到记录中，元数据信息以map结构方式作为@filemeta字段值添加到记录中，文件插件支持的元信息字段如下：
+				 * hostIp：主机ip
+				 * hostName：主机名称
+				 * filePath： 文件路径
+				 * timestamp：采集的时间戳
+				 * pointer：记录对应的截止文件指针,long类型
+				 * fileId：linux文件号，windows系统对应文件路径
+				 * 例如：
+				 * {
+				 *   "_index": "filelog",
+				 *   "_type": "_doc",
+				 *   "_id": "HKErgXgBivowv_nD0Jhn",
+				 *   "_version": 1,
+				 *   "_score": null,
+				 *   "_source": {
+				 *     "title": "解放",
+				 *     "subtitle": "小康",
+				 *     "ipinfo": "",
+				 *     "newcollecttime": "2021-03-30T03:27:04.546Z",
+				 *     "author": "张无忌",
+				 *     "@filemeta": {
+				 *       "path": "D:\\ecslog\\error-2021-03-27-1.log",
+				 *       "hostname": "",
+				 *       "pointer": 3342583,
+				 *       "hostip": "",
+				 *       "timestamp": 1617074824542,
+				 *       "fileId": "D:/ecslog/error-2021-03-27-1.log"
+				 *     },
+				 *     "message": "[18:04:40:161] [INFO] - org.frameworkset.tran.schedule.ScheduleService.externalTimeSchedule(ScheduleService.java:192) - Execute schedule job Take 3 ms"
+				 *   }
+				 * }
+				 *
+				 * true 开启 false 关闭
+				 */
+				config.setEnableMeta(true);
+				/**
+				 * 单位：毫秒
+				 * 从文件采集（fetch）一个batch的数据后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0
+				 */
+				config.setSleepAwaitTimeAfterFetch(0l);
+				/**
+				 * 单位：毫秒
+				 * 从文件采集完成一个任务后，休息一会，避免cpu占用过高，在大量文件同时采集时可以设置，大于0有效，默认值0
+				 */
+				config.setSleepAwaitTimeAfterCollect(60l);
+				fileLog2ESImportBuilder.setFileImportConfig(config);
+				//指定elasticsearch数据源名称，在application.properties文件中配置，default为默认的es数据源名称
+				fileLog2ESImportBuilder.setTargetElasticsearch("default");
+				//指定索引名称，这里采用的是elasticsearch 7以上的版本进行测试，不需要指定type
+				fileLog2ESImportBuilder.setIndex("metrics-report");
+				//指定索引类型，这里采用的是elasticsearch 7以上的版本进行测试，不需要指定type
+				//fileLog2ESImportBuilder.setIndexType("idxtype");
+
+
+
+				//映射和转换配置开始
+			//		/**
+			//		 * db-es mapping 表字段名称到es 文档字段的映射：比如document_id -> docId
+			//		 * 可以配置mapping，也可以不配置，默认基于java 驼峰规则进行db field-es field的映射和转换
+			//		 */
+			//		fileLog2ESImportBuilder.addFieldMapping("document_id","docId")
+			//				.addFieldMapping("docwtime","docwTime")
+			//				.addIgnoreFieldMapping("channel_id");//添加忽略字段
+			//
+			//
+			//		/**
+			//		 * 为每条记录添加额外的字段和值
+			//		 * 可以为基本数据类型，也可以是复杂的对象
+			//		 */
+			//		fileLog2ESImportBuilder.addFieldValue("testF1","f1value");
+			//		fileLog2ESImportBuilder.addFieldValue("testInt",0);
+			//		fileLog2ESImportBuilder.addFieldValue("testDate",new Date());
+			//		fileLog2ESImportBuilder.addFieldValue("testFormateDate","yyyy-MM-dd HH",new Date());
+			//		TestObject testObject = new TestObject();
+			//		testObject.setId("testid");
+			//		testObject.setName("jackson");
+			//		fileLog2ESImportBuilder.addFieldValue("testObject",testObject);
+				fileLog2ESImportBuilder.addFieldValue("author","张无忌");
+			//		fileLog2ESImportBuilder.addFieldMapping("operModule","OPER_MODULE");
+			//		fileLog2ESImportBuilder.addFieldMapping("logContent","LOG_CONTENT");
+
+
+				/**
+				 * 重新设置es数据结构
+				 */
+				fileLog2ESImportBuilder.setDataRefactor(new DataRefactor() {
+					public void refactor(Context context) throws Exception  {
+						//可以根据条件定义是否丢弃当前记录
+						//context.setDrop(true);return;
+			//				if(s.incrementAndGet() % 2 == 0) {
+			//					context.setDrop(true);
+			//					return;
+			//				}
+			//				System.out.println(data);
+
+			//				context.addFieldValue("author","duoduo");//将会覆盖全局设置的author变量
+						context.addFieldValue("title","解放");
+						context.addFieldValue("subtitle","小康");
+
+						//如果日志是普通的文本日志，非json格式，则可以自己根据规则对包含日志记录内容的message字段进行解析
+						String message = context.getStringValue("@message");
+						String[] fvs = message.split(" ");//空格解析字段
+						/**
+						 * //解析示意代码
+						 * String[] fvs = message.split(" ");//空格解析字段
+						 * //将解析后的信息添加到记录中
+						 * context.addFieldValue("f1",fvs[0]);
+						 * context.addFieldValue("f2",fvs[1]);
+						 * context.addFieldValue("logVisitorial",fvs[2]);//包含ip信息
+						 */
+						//直接获取文件元信息
+						Map fileMata = (Map)context.getValue("@filemeta");
+						/**
+						 * 文件插件支持的元信息字段如下：
+						 * hostIp：主机ip
+						 * hostName：主机名称
+						 * filePath： 文件路径
+						 * timestamp：采集的时间戳
+						 * pointer：记录对应的截止文件指针,long类型
+						 * fileId：linux文件号，windows系统对应文件路径
+						 */
+						String filePath = (String)context.getMetaValue("filePath");
+						//可以根据文件路径信息设置不同的索引
+			//				if(filePath.endsWith("metrics-report.log")) {
+			//					context.setIndex("metrics-report");
+			//				}
+			//				else if(filePath.endsWith("es.log")){
+			//					 context.setIndex("eslog");
+			//				}
+
+
+			//				context.addIgnoreFieldMapping("title");
+						//上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
+			//				context.addIgnoreFieldMapping("author");
+
+			//				//修改字段名称title为新名称newTitle，并且修改字段的值
+			//				context.newName2ndData("title","newTitle",(String)context.getValue("title")+" append new Value");
+						/**
+						 * 获取ip对应的运营商和区域信息
+						 */
+						/**
+						 IpInfo ipInfo = (IpInfo) context.getIpInfo(fvs[2]);
+						 if(ipInfo != null)
+						 context.addFieldValue("ipinfo", ipInfo);
+						 else{
+						 context.addFieldValue("ipinfo", "");
+						 }*/
+						DateFormat dateFormat = SerialUtil.getDateFormateMeta().toDateFormat();
+			//				Date optime = context.getDateValue("LOG_OPERTIME",dateFormat);
+			//				context.addFieldValue("logOpertime",optime);
+						context.addFieldValue("newcollecttime",new Date());
+
+						/**
+						 //关联查询数据,单值查询
+						 Map headdata = SQLExecutor.queryObjectWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+						 "select * from head where billid = ? and othercondition= ?",
+						 context.getIntegerValue("billid"),"otherconditionvalue");//多个条件用逗号分隔追加
+						 //将headdata中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+						 context.addFieldValue("headdata",headdata);
+						 //关联查询数据,多值查询
+						 List<Map> facedatas = SQLExecutor.queryListWithDBName(Map.class,context.getEsjdbc().getDbConfig().getDbName(),
+						 "select * from facedata where billid = ?",
+						 context.getIntegerValue("billid"));
+						 //将facedatas中的数据,调用addFieldValue方法将数据加入当前es文档，具体如何构建文档数据结构根据需求定
+						 context.addFieldValue("facedatas",facedatas);
+						 */
+					}
+				});
+				//映射和转换配置结束
+				fileLog2ESImportBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+					@Override
+					public void success(TaskCommand<String,String> taskCommand, String o) {
+						logger.info("result:"+o);
+					}
+
+					@Override
+					public void error(TaskCommand<String,String> taskCommand, String o) {
+						logger.warn("error:"+o);
+					}
+
+					@Override
+					public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
+						logger.warn("error:",exception);
+					}
+
+					@Override
+					public int getMaxRetry() {
+						return 0;
+					}
+				});
+				/**
+				 * 内置线程池配置，实现多线程并行数据导入功能，作业完成退出时自动关闭该线程池
+				 */
+				fileLog2ESImportBuilder.setParallel(true);//设置为多线程并行批量导入,false串行
+				fileLog2ESImportBuilder.setQueue(10);//设置批量导入线程池等待队列长度
+				fileLog2ESImportBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
+				fileLog2ESImportBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
+				fileLog2ESImportBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
+				fileLog2ESImportBuilder.setPrintTaskLog(true);
+
+				fileLog2ESImportBuilder.addCallInterceptor(new CallInterceptor() {
+					@Override
+					public void preCall(TaskContext taskContext) {
+
+					}
+
+					@Override
+					public void afterCall(TaskContext taskContext) {
+						if(taskContext != null) {
+							FileTaskContext fileTaskContext = (FileTaskContext)taskContext;
+							logger.info("文件{}导入情况:{}",fileTaskContext.getFileInfo().getOriginFilePath(),taskContext.getJobTaskMetrics().toString());
+						}
+					}
+
+					@Override
+					public void throwException(TaskContext taskContext, Exception e) {
+						if(taskContext != null) {
+							FileTaskContext fileTaskContext = (FileTaskContext)taskContext;
+							logger.info("文件{}导入情况:{}",fileTaskContext.getFileInfo().getOriginFilePath(),taskContext.getJobTaskMetrics().toString());
+						}
+					}
+				});
+//增量配置开始
+				fileLog2ESImportBuilder.setFromFirst(true);//setFromfirst(false)，如果作业停了，作业重启后从上次截止位置开始采集数据，
+				//setFromfirst(true) 如果作业停了，作业重启后，重新开始采集数据
+				fileLog2ESImportBuilder.setLastValueStorePath("springfileloges_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
+				//增量配置结束
+				//定时任务配置，
+				config.setUseETLScheduleForScanNewFile(true);
+				fileLog2ESImportBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
+//					 .setScheduleDate(date) //指定任务开始执行时间：日期
+						.setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
+						.setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
+				/**
+				 * 启动es数据导入文件并上传sftp/ftp作业
+				 */
+				if(autoPause) {
+					/**
+					 * 创建具备暂停功能的数据同步作业，控制调度执行后将作业自动标记为暂停状态，等待下一个resumeShedule指令才继续允许作业调度执行，
+					 */
+					filedataStream = fileLog2ESImportBuilder.builder(true);
+				}
+				else{
+					/**
+					 * 需要人工手动暂停才能暂停作业
+					 */
+					filedataStream = fileLog2ESImportBuilder.builder(new DefaultScheduleAssert());
+				}
+
+				filedataStream.execute();//启动同步作业
+				logger.info("job started.");
+				return "file2es job started.";
+			}
+		}
+		else{
+			return "file2es job has started.";
+		}
+	}
 	public String stopDB2ESJob(){
 		if(dataStream != null) {
 			synchronized (this) {
@@ -77,46 +491,12 @@ public class AutoschedulePauseDataTran {
 	}
 
 	public String pauseScheduleDB2ESJob(){
-		if(dataStream != null) {
-			synchronized (this) {
-				if (dataStream != null) {
-					boolean ret = dataStream.pauseSchedule();//如果db2es作业采用的是调度后自动暂停机制，所以ret始终返回false
-					if(ret) {
-						return "db2ESImport job schedule paused.";
-					}
-					else{
-						return "db2ESImport job schedule is not scheduled, Ignore pauseScheduleJob command.";
-					}
-				} else {
-					return "db2ESImport job has stopped.";
-				}
-			}
-		}
-		else {
-			return "db2ESImport job has stopped.";
-		}
+		return this.pause(dataStream,"db2ESImport");
+
 	}
 
 	public String resumeScheduleDB2ESJob(){
-		if(dataStream != null) {
-			synchronized (this) {
-				if (dataStream != null) {
-
-					boolean ret = dataStream.resumeSchedule();
-					if(ret) {
-						return "db2ESImport job schedule resume to continue.";
-					}
-					else{
-						return "db2ESImport job schedule is not paused, Ignore resumeScheduleJob command.";
-					}
-				} else {
-					return "db2ESImport job has stopped.";
-				}
-			}
-		}
-		else {
-			return "db2ESImport job has stopped.";
-		}
+		return this.resume(dataStream,"db2ESImport");
 	}
 
 	private AgentInfoBo.Builder createBuilderFromValue(byte[] serializedAgentInfo) {
@@ -397,46 +777,12 @@ public class AutoschedulePauseDataTran {
 
 
 	public String pauseScheduleHBase2ESJob(){
-		if(hbase2esDataStream != null) {
-			synchronized (this) {
-				if (hbase2esDataStream != null) {
-					boolean ret = hbase2esDataStream.pauseSchedule();//由于hbase2es作业采用的是调度后自动暂停机制，所以ret始终返回false
-					if(ret) {
-						return "HBase2ES job schedule paused.";
-					}
-					else{
-						return "HBase2ES job schedule is not scheduled, Ignore pauseScheduleJob command.";
-					}
-				} else {
-					return "HBase2ES job has stopped.";
-				}
-			}
-		}
-		else {
-			return "HBase2ES job has stopped.";
-		}
+		return this.pause(hbase2esDataStream,"HBase2ES");
+
 	}
 
 	public String resumeScheduleHBase2ESJob(){
-		if(hbase2esDataStream != null) {
-			synchronized (this) {
-				if (hbase2esDataStream != null) {
-
-					boolean ret = hbase2esDataStream.resumeSchedule();
-					if(ret) {
-						return "HBase2ES job schedule resume to continue.";
-					}
-					else{
-						return "HBase2ES job schedule is not paused, Ignore resumeScheduleJob command.";
-					}
-				} else {
-					return "HBase2ES job has stopped.";
-				}
-			}
-		}
-		else {
-			return "HBase2ES job has stopped.";
-		}
+		return this.resume(hbase2esDataStream,"HBase2ES");
 	}
 
 	public String scheduleHBase2ESJob() {

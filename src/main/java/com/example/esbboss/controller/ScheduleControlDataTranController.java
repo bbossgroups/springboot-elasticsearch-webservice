@@ -109,4 +109,42 @@ public class ScheduleControlDataTranController {
 	public @ResponseBody String resumeScheduleHBase2ESJob(){
 		return dataTran.resumeScheduleHBase2ESJob();
 	}
+
+
+	/**
+	 * 启动file-es同步作业
+	 * @return
+	 */
+	@RequestMapping("/schedulecontrol/startfile2es")
+	public @ResponseBody
+	String startfile2es(boolean autoPause){
+		return dataTran.startfile2es( autoPause);
+	}
+
+	/**
+	 * 停止作业
+	 * @return
+	 */
+	@RequestMapping("/schedulecontrol/stopfile2es")
+	public @ResponseBody String stopfile2es(){
+		return dataTran.stopfile2es();
+	}
+
+	/**
+	 * 暂停调度hbase-es同步作业
+	 * @return
+	 */
+	@RequestMapping("/schedulecontrol/pauseFile2es")
+	public @ResponseBody String pauseFile2es(){
+		return dataTran.pauseFile2es();
+	}
+
+	/**
+	 * 继续调度hbase-es同步作业
+	 * @return
+	 */
+	@RequestMapping("/schedulecontrol/resumeFile2es")
+	public @ResponseBody String resumeFile2es(){
+		return dataTran.resumeFile2es();
+	}
 }

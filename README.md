@@ -10,6 +10,7 @@ Web service demo based on spring boot 1.x,2.x and Elasticsearch bboss client，i
 6. search documents pararrel
 7. database-elasticsearch数据同步
 8. hbase-elasticsearch数据同步
+9. file-elasticsearch数据同步
 
 # Demo build 
 
@@ -323,6 +324,78 @@ HBase2ES job schedule is not paused, Ignore resumeScheduleJob command.
 ```json
 HBase2ES job has been stopped.
 ```
+
+# 5.运行控制作业调度的基本file-elasticsearch作业
+## 5.1 run the file-elasticsearch data tran job
+Enter the following address in the browser to run the file-elasticsearch data tran job:
+
+http://localhost:808/schedulecontrol/startfile2es
+
+或者创建带有自动暂停的作业
+
+Return the following results in the browser to show successful execution:
+
+作业启动成功
+```json
+file2ES job started.
+```
+
+作业已经启动
+```json
+file2ES job has started.
+```
+## 5.2 stop the file-elasticsearch data tran job
+Enter the following address in the browser to stop the file-elasticsearch data tran job:
+
+http://localhost:808/schedulecontrol/stopfile2es
+
+Return the following search results in the browser to show successful execution:
+作业停止成功
+```json
+file2ES job started.
+```
+作业已经停止
+```json
+file2ES job has been stopped.
+```
+## 5.3 Pause schedule the file-elasticsearch data tran job
+Enter the following address in the browser to Pause the file-elasticsearch data tran job:
+
+http://localhost:808/schedulecontrol/pauseFile2es
+
+Return the following search results in the browser to show successful execution:
+作业暂停成功
+```json
+file2ES job schedule paused.
+```
+作业已经暂停
+```json
+file2ES job schedule is not scheduled, Ignore pauseScheduleJob command.
+```
+作业已经停止
+```json
+file2ES job has been stopped.
+```
+
+## 5.4 Resume schedule the file-elasticsearch data tran job
+Enter the following address in the browser to Resume the file-elasticsearch data tran job:
+
+http://localhost:808/schedulecontrol/resumeFile2es
+
+Return the following search results in the browser to show successful execution:
+作业继续调度成功
+```json
+file2ES job schedule resume to continue.
+```
+作业已经在调度执行
+```json
+file2ES job schedule is not paused, Ignore resumeScheduleJob command.
+```
+作业已经停止
+```json
+file2ES job has been stopped.
+```
+
 # Development document：
 
 https://esdoc.bbossgroups.com/#/development
