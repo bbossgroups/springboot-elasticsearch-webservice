@@ -110,7 +110,7 @@ Return the following search results in the browser to indicate successful execut
     "totalSize": 2
 }
 ```
-# 本demo还包含两个数据同步的案例：
+# 本demo还包含三个数据同步的案例：
 - DB-Elasticsearch数据同步
 - Hbase-Elasticsearch数据同步（基于hbase 2.2.3开发，如果需要对接其他版本，需要调整pom.xml中的hbase-shaded-client maven坐标版本号）
 ```xml
@@ -120,7 +120,10 @@ Return the following search results in the browser to indicate successful execut
 			<version>2.2.3</version>
 		</dependency>
 ```
+- File-Elasticsearch数据采集
+
 使用方法如下：
+
 # 1.运行基本db-elasticsearch作业
 ## 1.1 run the db-elasticsearch data tran job
 Enter the following address in the browser to run the db-elasticsearch data tran job:
