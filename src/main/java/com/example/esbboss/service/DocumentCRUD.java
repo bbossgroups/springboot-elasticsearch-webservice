@@ -21,6 +21,8 @@ import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.boot.BBossESStarter;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.entity.ESDatas;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,28 +39,16 @@ import java.util.Map;
  */
 @Service
 public class DocumentCRUD {
+	private Logger logger = LoggerFactory.getLogger(DocumentCRUD.class);
 	@Autowired
-	private BBossESStarter bbossESStarterDefault;
+	private BBossESStarter bbossESStarter;
 	//DSL config file path
 	private String mappath = "esmapper/demo.xml";
-	public void testMultiCluster(){
-		//判断索引类型是否存在，false表示不存在，正常返回true表示存在
-		boolean exist = bbossESStarterDefault.getRestClient().existIndiceType("twitter","tweet");
-		System.out.println("default twitter/tweet:"+exist);
-		//获取logs对应的Elasticsearch集群客户端，并进行existIndiceType操作
-		exist = bbossESStarterDefault.getRestClient("logs").existIndiceType("twitter","tweet");
-		System.out.println("logs twitter/tweet:"+exist);
-		//获取logs对应的Elasticsearch集群客户端，判读索引是否存在，false表示不存在，正常返回true表示存在
-		exist = bbossESStarterDefault.getRestClient("logs").existIndice("twitter");
-		System.out.println("logs  twitter:"+exist);
-		//获取logs对应的Elasticsearch集群客户端，判断索引是否定义
-		exist = bbossESStarterDefault.getRestClient("logs").existIndice("demo");
-		System.out.println("logs demo:"+exist);
-	}
+
 
 	public void dropAndCreateAndGetIndice(){
 		//Create a client tool to load configuration files, single instance multithreaded security
-		ClientInterface clientUtil = bbossESStarterDefault.getConfigRestClient(mappath);
+		ClientInterface clientUtil = bbossESStarter.getConfigRestClient(mappath);
 		try {
 			//To determine whether the indice demo exists, it returns true if it exists and false if it does not
 			boolean exist = clientUtil.existIndice("demo");
@@ -66,7 +56,7 @@ public class DocumentCRUD {
 			//Delete mapping if the indice demo already exists
 			if(exist) {
 				String r = clientUtil.dropIndice("demo");
-				System.out.println("clientUtil.dropIndice(\"demo\") response:"+r);
+				logger.debug("clientUtil.dropIndice(\"demo\") response:"+r);
 
 			}
 			//Create index demo
@@ -74,7 +64,7 @@ public class DocumentCRUD {
 					"createDemoIndice");//Index mapping DSL script name, defined createDemoIndice in esmapper/demo.xml
 
 			String demoIndice = clientUtil.getIndice("demo");//Gets the newly created indice structure
-			System.out.println("after createIndiceMapping clientUtil.getIndice(\"demo\") response:"+demoIndice);
+			logger.info("after createIndiceMapping clientUtil.getIndice(\"demo\") response:"+demoIndice);
 		} catch (ElasticSearchException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -86,11 +76,12 @@ public class DocumentCRUD {
 
 	public void addAndUpdateDocument()  {
 		//Build a create/modify/get/delete document client object, single instance multi-thread security
-		ClientInterface clientUtil = bbossESStarterDefault.getRestClient();
+		ClientInterface clientUtil = bbossESStarter.getRestClient();
 		//Build an object as index document
 		Demo demo = new Demo();
 		demo.setDemoId(2l);//Specify the document id, the unique identity, and mark with the @ESId annotation. If the demoId already exists, modify the document; otherwise, add the document
 		demo.setAgentStarttime(new Date());
+		demo.setAgentStarttimezh(new Date());
 		demo.setApplicationName("blackcatdemo2");
 		demo.setContentbody("this is content body2");
 		demo.setName("liudehua");
@@ -105,8 +96,8 @@ public class DocumentCRUD {
 
 
 
-		System.out.println("Print the result：addDocument-------------------------");
-		System.out.println(response);
+		logger.debug("Print the result：addDocument-------------------------");
+		logger.debug(response);
 
 		demo = new Demo();
 		demo.setDemoId(3l);//Specify the document id, the unique identity, and mark with the @ESId annotation. If the demoId already exists, modify the document; otherwise, add the document
@@ -116,7 +107,8 @@ public class DocumentCRUD {
 		demo.setName("zhangxueyou");
 		demo.setOrderId("NFZF15045871807281445364228");
 		demo.setContrastStatus(3);
-
+		demo.setAgentStarttime(new Date());
+		demo.setAgentStarttimezh(new Date());
 
 		//Add the document and force refresh
 		response = clientUtil.addDocument("demo",//indice name
@@ -138,6 +130,7 @@ public class DocumentCRUD {
 		demo.setName("刘德华modify\t");
 		demo.setOrderId("NFZF15045871807281445364228");
 		demo.setContrastStatus(2);
+		demo.setAgentStarttimezh(new Date());
 		//Execute update and force refresh
 		response = clientUtil.addDocument("demo",//index name
 				"demo",//idnex type
@@ -148,32 +141,32 @@ public class DocumentCRUD {
 		response = clientUtil.getDocument("demo",//indice name
 				"demo",//idnex type
 				"2");//document id
-		System.out.println("Print the modified result:getDocument-------------------------");
-		System.out.println(response);
+		logger.debug("Print the modified result:getDocument-------------------------");
+		logger.debug(response);
 
 
 
 
-		System.out.println("Print the modified result：getDocument-------------------------");
-		System.out.println(response);
+		logger.debug("Print the modified result：getDocument-------------------------");
+		logger.debug(response);
 
 
 	}
 
 	public void deleteDocuments(){
 		//Build a create/modify/get/delete document client object, single instance multi-thread security
-		ClientInterface clientUtil = bbossESStarterDefault.getRestClient();
+		ClientInterface clientUtil = bbossESStarter.getRestClient();
 		//Batch delete documents
 		clientUtil.deleteDocuments("demo",//indice name
 				"demo",//idnex type
-				new String[] {"2","3"});//Batch delete document ids
+				new String[]{"2","3"});//Batch delete document ids
 	}
 
 	/**
 	 * Use slice parallel scoll query all documents of indice demo by 2 thread tasks. DEFAULT_FETCHSIZE is 5000
 	 */
 	public void searchAllPararrel(){
-		ClientInterface clientUtil = bbossESStarterDefault.getRestClient();
+		ClientInterface clientUtil = bbossESStarter.getRestClient();
 		ESDatas<Demo> esDatas = clientUtil.searchAllParallel("demo", Demo.class,2);
 	}
 
@@ -184,7 +177,7 @@ public class DocumentCRUD {
 	 */
 	public DemoSearchResult search()   {
 		//Create a load DSL file client instance to retrieve documents, single instance multithread security
-		ClientInterface clientUtil = bbossESStarterDefault.getConfigRestClient(mappath);
+		ClientInterface clientUtil = bbossESStarter.getConfigRestClient(mappath);
 		//Set query conditions, pass variable parameter values via map,key for variable names in DSL
 		//There are four variables in the DSL:
 		//        applicationName1
@@ -228,9 +221,6 @@ public class DocumentCRUD {
 		demoSearchResult.setTotalSize(totalSize);
 		return demoSearchResult;
 	}
-
-
-
 
 
 }

@@ -1,19 +1,19 @@
-package com.example.esbboss.service;
-/**
- * Copyright 2008 biaoping.yin
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ *  Copyright 2008-2019 bboss
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
+package com.example.esbboss.service;
 
 import com.example.esbboss.entity.Demo;
 import com.example.esbboss.entity.DemoSearchResult;
@@ -21,13 +21,10 @@ import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.boot.BBossESStarter;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.entity.ESDatas;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -38,30 +35,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>Description: </p>
- * <p></p>
- * <p>Copyright (c) 2018</p>
- * @Date 2019/9/18 10:27
- * @author biaoping.yin
- * @version 1.0
+ * @author yinbp[yin-bp@163.com]
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest
-public class RestClientTest {
-	private Logger logger = LoggerFactory.getLogger(RestClientTest.class);
+@Service
+public class DocumentCRUD7 {
+	private Logger logger = LoggerFactory.getLogger(DocumentCRUD7.class);
 	@Autowired
 	private BBossESStarter bbossESStarter;
 	//DSL config file path
-	private String mappath = "esmapper/demo.xml";
+	private String mappath = "esmapper/demo7.xml";
 
-	@Test
-	public void test(){
-		this.dropAndCreateAndGetIndice();
-		addAndUpdateDocument();
-		searchAllPararrel();
-		this.search();
-		this.deleteDocuments();
-	}
+
 	public void dropAndCreateAndGetIndice(){
 		//Create a client tool to load configuration files, single instance multithreaded security
 		ClientInterface clientUtil = bbossESStarter.getConfigRestClient(mappath);
@@ -107,7 +91,6 @@ public class RestClientTest {
 
 		//Add the document and force refresh
 		String response = clientUtil.addDocument("demo",//indice name
-				"demo",//idnex type
 				demo,"refresh=true");
 
 
@@ -128,12 +111,10 @@ public class RestClientTest {
 
 		//Add the document and force refresh
 		response = clientUtil.addDocument("demo",//indice name
-				"demo",//idnex type
 				demo,"refresh=true");
 
 		//Get the document object according to the document id, and return the Demo object
 		demo = clientUtil.getDocument("demo",//indice name
-				"demo",//idnex type
 				"2",//document id
 				Demo.class);
 
@@ -149,13 +130,11 @@ public class RestClientTest {
 		demo.setAgentStarttimezh(new Date());
 		//Execute update and force refresh
 		response = clientUtil.addDocument("demo",//index name
-				"demo",//idnex type
 				demo,"refresh=true");
 
 
 		//Get the modified document object according to the document id and return the json message string
 		response = clientUtil.getDocument("demo",//indice name
-				"demo",//idnex type
 				"2");//document id
 		logger.debug("Print the modified result:getDocument-------------------------");
 		logger.debug(response);
@@ -174,7 +153,6 @@ public class RestClientTest {
 		ClientInterface clientUtil = bbossESStarter.getRestClient();
 		//Batch delete documents
 		clientUtil.deleteDocuments("demo",//indice name
-				"demo",//idnex type
 				new String[]{"2","3"});//Batch delete document ids
 	}
 
@@ -217,9 +195,9 @@ public class RestClientTest {
 		//Execute the query
 		ESDatas<Demo> esDatas =  //ESDatas contains a collection of currently retrieved records, up to 1000 records, specified by the size attribute in the DSL
 				clientUtil.searchList("demo/_search",//demo as the indice, _search as the search action
-						"searchDatas",//DSL statement name defined in esmapper/demo.xml
-						params,//Query parameters
-						Demo.class);//Data object type Demo returned
+				"searchDatas",//DSL statement name defined in esmapper/demo.xml
+				params,//Query parameters
+				Demo.class);//Data object type Demo returned
 
 
 		//Gets a list of result objects and returns max up to 1000 records (specified in DSL)
@@ -237,4 +215,6 @@ public class RestClientTest {
 		demoSearchResult.setTotalSize(totalSize);
 		return demoSearchResult;
 	}
+
+
 }

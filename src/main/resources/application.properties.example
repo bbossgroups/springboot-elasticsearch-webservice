@@ -5,6 +5,8 @@ logging.level.com.frameworkset=INFO
 logging.level.org.frameworkset=INFO
 
 logging.level.org.apache=INFO
+logging.level.com.example=INFO
+
 
 # DSL configuration file hot load scan interval, in milliseconds, 5 seconds scan by default, turn off scan mechanism when <= 0
 spring.elasticsearch.bboss.dslfile.refreshInterval = -1
@@ -12,31 +14,39 @@ spring.elasticsearch.bboss.dslfile.refreshInterval = -1
 spring.elasticsearch.bboss.elasticUser=elastic
 spring.elasticsearch.bboss.elasticPassword=changeme
 
-
+spring.elasticsearch.bboss.elasticsearch.includeTypeName = false
 spring.elasticsearch.bboss.elasticsearch.rest.hostNames=192.168.137.1:9200
 #spring.elasticsearch.bboss.elasticsearch.rest.hostNames=10.180.211.27:9280,10.180.211.27:9281,10.180.211.27:9282
 ##HTTPS configuration, add the https:// protocol header
 #spring.elasticsearch.bboss.default.elasticsearch.rest.hostNames=https://10.180.211.27:9280,https://10.180.211.27:9281,https://10.180.211.27:9282
 spring.elasticsearch.bboss.elasticsearch.dateFormat=yyyy.MM.dd
 spring.elasticsearch.bboss.elasticsearch.timeZone=Asia/Shanghai
-spring.elasticsearch.bboss.elasticsearch.ttl=2d
 #Debug switch to output DSL statement on console: showTemplate,false off, true on, log4j at least info level
-spring.elasticsearch.bboss.elasticsearch.showTemplate=true
+spring.elasticsearch.bboss.elasticsearch.showTemplate=false
+spring.elasticsearch.bboss.elasticsearch.logDslCallback=org.frameworkset.elasticsearch.client.LoggerDslCallback
+
 spring.elasticsearch.bboss.elasticsearch.discoverHost=false
 
+spring.elasticsearch.bboss.elasticsearch.sliceScrollThreadCount=20
 
+spring.elasticsearch.bboss.elasticsearch.sliceScrollThreadQueue=20
+spring.elasticsearch.bboss.elasticsearch.scrollThreadCount=10
+
+spring.elasticsearch.bboss.elasticsearch.scrollThreadQueue=10
+#spring.elasticsearch.bboss.elasticsearch.slowDslThreshold = 1000
+#spring.elasticsearch.bboss.elasticsearch.slowDslCallback=org.bboss.elasticsearchtest.crud.TestSlowDslCallback
 ##Elasticsearch restclient HTTP connection pool configuration
 spring.elasticsearch.bboss.http.timeoutConnection = 5000
-spring.elasticsearch.bboss.http.timeoutSocket = 5000
+spring.elasticsearch.bboss.http.timeoutSocket = 50000
 spring.elasticsearch.bboss.http.connectionRequestTimeout=5000
 spring.elasticsearch.bboss.http.retryTime = 1
 spring.elasticsearch.bboss.http.maxLineLength = -1
 spring.elasticsearch.bboss.http.maxHeaderCount = 200
-spring.elasticsearch.bboss.http.maxTotal = 400
-spring.elasticsearch.bboss.http.defaultMaxPerRoute = 200
+spring.elasticsearch.bboss.http.maxTotal = 4
+spring.elasticsearch.bboss.http.defaultMaxPerRoute = 2
 spring.elasticsearch.bboss.http.soReuseAddress = false
 spring.elasticsearch.bboss.http.soKeepAlive = false
-spring.elasticsearch.bboss.http.timeToLive = 3600000
+
 spring.elasticsearch.bboss.http.keepAlive = 3600000
 spring.elasticsearch.bboss.http.keystore =
 spring.elasticsearch.bboss.http.keyPassword =
@@ -44,6 +54,8 @@ spring.elasticsearch.bboss.http.keyPassword =
 # If the specified as the default, use DefaultHostnameVerifier, otherwise use SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
 spring.elasticsearch.bboss.http.hostnameVerifier =
 
+spring.elasticsearch.bboss.http.evictExpiredConnections=false
+spring.elasticsearch.bboss.http.timeToLive = 3600000
 #The idle connection is verified every few milliseconds,
 # and the invalid connection is automatically released, with <=0 unchecked
 
@@ -58,12 +70,43 @@ spring.elasticsearch.bboss.http.staleConnectionCheckEnabled=false
 #* }
 #* Method returns true and retries false without retrying
 spring.elasticsearch.bboss.http.customHttpRequestRetryHandler=org.frameworkset.spi.remote.http.ConnectionResetHttpRequestRetryHandler
+spring.elasticsearch.bboss.http.httpClientBuilderCallback=com.example.esbboss.HttpClientBuilderCallbackDemo
+
+# 演示数据库数据导入elasticsearch源配置
+# ip地址信息库配置
+spring.elasticsearch.bboss.ip.cachesize = 2000
+# 库下载地址https://dev.maxmind.com/geoip/geoip2/geolite2/
+spring.elasticsearch.bboss.ip.database = E:/workspace/hnai/terminal/geolite2/GeoLite2-City.mmdb
+spring.elasticsearch.bboss.ip.asnDatabase = E:/workspace/hnai/terminal/geolite2/GeoLite2-ASN.mmdb
 
 
+# 演示数据库数据导入elasticsearch源配置
+spring.elasticsearch.bboss.db.name = test
+spring.elasticsearch.bboss.db.user = root
+spring.elasticsearch.bboss.db.password = 123456
+spring.elasticsearch.bboss.db.driver = com.mysql.cj.jdbc.Driver
+#db.url = jdbc:mysql://192.168.137.1:3306/bboss?useCursorFetch=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+## mysql 5 jdbc配置
+#spring.elasticsearch.bboss.db.url = jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true
+## mysql jdbc 8配置
+spring.elasticsearch.bboss.db.url = jdbc:mysql://192.168.137.1:3306/bboss?useUnicode=true&characterEncoding=utf-8&useSSL=false&rewriteBatchedStatements=true&serverTimezone=Asia/Shanghai
+spring.elasticsearch.bboss.db.usePool = true
+
+spring.elasticsearch.bboss.db.initSize=5
+spring.elasticsearch.bboss.db.minIdleSize=5
+spring.elasticsearch.bboss.db.maxSize=5
 
 
+spring.elasticsearch.bboss.db.validateSQL = select 1
+spring.elasticsearch.bboss.db.showsql = true
 
-
-
-
+## 同步状态status管理数据源配置，在同步作业中通过db.name引用并设置default为status表对应的数据库：
+## importBuilder.setStatusDbname("default");
+#spring.bboss.db.name = default
+#spring.bboss.db.user = root
+#spring.bboss.db.password = 123456
+#spring.bboss.db.driver = com.mysql.cj.jdbc.Driver
+#spring.bboss.db.url = jdbc:mysql://10.13.11.5:3306/mysql
+#spring.bboss.db.usePool = true
+#spring.bboss.db.validateSQL = select 1
 

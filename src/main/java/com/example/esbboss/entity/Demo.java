@@ -46,6 +46,17 @@ public class Demo extends ESBaseData {
 	 */
 
 	protected Date agentStarttime;
+
+
+
+	public Date getAgentStarttimezh() {
+		return agentStarttimezh;
+	}
+
+	public void setAgentStarttimezh(Date agentStarttimezh) {
+		this.agentStarttimezh = agentStarttimezh;
+	}
+
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Column(dataformat = "yyyy-MM-dd HH:mm:ss")
 	private Date agentStarttimezh;
@@ -118,13 +129,5 @@ public class Demo extends ESBaseData {
 
 	public void setContrastStatus(int contrastStatus) {
 		this.contrastStatus = contrastStatus;
-	}
-
-	public Date getAgentStarttimezh() {
-		return agentStarttimezh;
-	}
-
-	public void setAgentStarttimezh(Date agentStarttimezh) {
-		this.agentStarttimezh = agentStarttimezh;
 	}
 }
