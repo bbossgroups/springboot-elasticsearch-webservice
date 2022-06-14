@@ -16,6 +16,7 @@ package com.example.esbboss.controller;
  */
 
 import com.example.esbboss.service.DataTran;
+import com.example.esbboss.service.NewES2ESScrollTimestampMultiJobDemo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,6 +34,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class DataTranController {
 	@Autowired
 	private DataTran dataTran;
+	@Autowired
+	private NewES2ESScrollTimestampMultiJobDemo newES2ESScrollTimestampMultiJobDemo;
+
+
+	/**
+	 * 启动db-es同步作业
+	 * @return
+	 */
+	@RequestMapping("/scheduleMultiES2ESJob")
+	public @ResponseBody
+	String scheduleMultiES2ESJob(){
+		newES2ESScrollTimestampMultiJobDemo.mulitExecute();
+		return "scheduleMultiES2ESJob end";
+	}
 
 	/**
 	 * 启动db-es同步作业

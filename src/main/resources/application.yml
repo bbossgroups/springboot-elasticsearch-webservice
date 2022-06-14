@@ -1,3 +1,5 @@
+server:
+  port: 808
 spring:
   elasticsearch:
     bboss:

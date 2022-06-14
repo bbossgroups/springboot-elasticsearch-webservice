@@ -399,6 +399,24 @@ file2ES job schedule is not paused, Ignore resumeScheduleJob command.
 file2ES job has been stopped.
 ```
 
+## 5.5 Schedule the  elasticsearch-elasticsearch data tran multijob
+Enter the following address in the browser to Resume the file-elasticsearch data tran job:
+
+http://localhost:808/scheduleMultiES2ESJob
+
+Return the following search results in the browser to show successful execution:
+作业继续调度成功
+```json
+file2ES job schedule resume to continue.
+```
+作业已经在调度执行
+```json
+file2ES job schedule is not paused, Ignore resumeScheduleJob command.
+```
+作业已经停止
+```json
+file2ES job has been stopped.
+```
 # Development document：
 
 https://esdoc.bbossgroups.com/#/development

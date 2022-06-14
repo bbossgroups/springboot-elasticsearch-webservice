@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding='UTF-8'?>
+<properties>
+    <description>
+        <![CDATA[
+            配置数据导入的dsl
+         ]]>
+    </description>
+    <!--
+          条件片段
+     -->
+    <property name="queryCondition">
+        <![CDATA[
+         "query": {
+                "bool": {
+                    "filter": [
+
+                        {   ## 增量检索范围，可以是时间范围，也可以是数字范围，这里采用的是数字增量字段
+                            "range": {
+
+                                "logOpertime": {
+                                    "gt": #[logOpertime], ## 时间增量检索字段
+                                    "lte": #[logOpertime__endTime] ## 时间增量检索字段
+                                }
+                            }
+                        }
+
+                    ]
+                }
+            }
+        ]]>
+    </property>
+
+    <!--
+       简单的scroll query案例，复杂的条件修改query dsl即可
+       -->
+    <property name="scrollQuery">
+        <![CDATA[
+         {
+            "size":#[size],
+            @{queryCondition}
+        }
+        ]]>
+    </property>
+
+
+    <!--
+        简单的slice scroll query案例，复杂的条件修改query dsl即可
+    -->
+    <property name="scrollSliceQuery">
+        <![CDATA[
+         {
+           "slice": {
+                "id": #[sliceId], ## 必须使用sliceId作为变量名称
+                "max": #[sliceMax] ## 必须使用sliceMax作为变量名称
+            },
+            "size":#[size],
+            @{queryCondition}
+        }
+        ]]>
+    </property>
+
+    <!--
+       简单的scroll query案例，查询所有的数据
+       -->
+    <property name="scrollAll">
+        <![CDATA[
+         {
+            "size":#[size],
+            "query": {"match_all": {}}
+        }
+        ]]>
+    </property>
+    <!--
+    简单的slice scroll query案例，查询所有的数据
+-->
+    <property name="scrollSliceAll">
+        <![CDATA[
+        {
+            "slice": {
+                "id": #[sliceId], ## 必须使用sliceId作为变量名称
+                "max": #[sliceMax] ## 必须使用sliceMax作为变量名称
+            },
+            "size":#[size],
+            "query": {"match_all": {}}
+        }
+        ]]>
+    </property>
+
+
+</properties>
