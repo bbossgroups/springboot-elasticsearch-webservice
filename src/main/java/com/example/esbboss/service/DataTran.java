@@ -23,10 +23,12 @@ import org.frameworkset.elasticsearch.boot.BBossESStarter;
 import org.frameworkset.tran.DataRefactor;
 import org.frameworkset.tran.DataStream;
 import org.frameworkset.tran.ExportResultHandler;
+import org.frameworkset.tran.config.ImportBuilder;
 import org.frameworkset.tran.context.Context;
-import org.frameworkset.tran.db.input.es.DB2ESImportBuilder;
-import org.frameworkset.tran.hbase.HBaseExportBuilder;
 import org.frameworkset.tran.metrics.TaskMetrics;
+import org.frameworkset.tran.plugin.db.input.DBInputConfig;
+import org.frameworkset.tran.plugin.es.output.ElasticsearchOutputConfig;
+import org.frameworkset.tran.plugin.hbase.input.HBaseInputConfig;
 import org.frameworkset.tran.schedule.CallInterceptor;
 import org.frameworkset.tran.schedule.ImportIncreamentConfig;
 import org.frameworkset.tran.schedule.TaskContext;
@@ -52,7 +54,7 @@ public class DataTran {
 	private Logger logger = LoggerFactory.getLogger(DataTran.class);
 	@Autowired
 	private BBossESStarter bbossESStarter;
-	private DB2ESImportBuilder db2ESImportBuilder;
+	private ImportBuilder db2ESImportBuilder;
 	private DataStream dataStream;
 //	@Autowired
 //	private BBossStarter bbossStarter;
@@ -98,7 +100,7 @@ public class DataTran {
 		if (db2ESImportBuilder == null) {
 			synchronized (this) {
 				if (db2ESImportBuilder == null) {
-					DB2ESImportBuilder importBuilder = DB2ESImportBuilder.newInstance();
+					ImportBuilder importBuilder = ImportBuilder.newInstance();
 					//增量定时任务不要删表，但是可以通过删表来做初始化操作
 //			if(dropIndice) {
 //				try {
@@ -121,7 +123,8 @@ public class DataTran {
 //							.setDbPassword("123456")
 //							.setValidateSQL("select 1")
 //							.setUsePool(false);//是否使用连接池
-					importBuilder.setDbName("test");//这里只需要指定dbname，具体的数据源配置在application.properties文件中指定
+					DBInputConfig dbInputConfig = new DBInputConfig();
+					dbInputConfig.setDbName("test");//这里只需要指定dbname，具体的数据源配置在application.properties文件中指定
 
 					//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
 					// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
@@ -129,17 +132,31 @@ public class DataTran {
 					// log_id和数据库对应的字段一致,就不需要设置setLastValueColumn信息，
 					// 但是需要设置setLastValueType告诉工具增量字段的类型
 
-					importBuilder.setSql("select * from td_sm_log where LOG_OPERTIME > #[LOG_OPERTIME]");
-//		importBuilder.addIgnoreFieldMapping("remark1");
-//		importBuilder.setSql("select * from td_sm_log ");
+					dbInputConfig.setSql("select * from td_sm_log where LOG_OPERTIME > #[LOG_OPERTIME]");
+					importBuilder.setInputConfig(dbInputConfig);
 					/**
 					 * es相关配置
 					 */
-					importBuilder.setTargetElasticsearch("default");
-					importBuilder
+					ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+					elasticsearchOutputConfig.setTargetElasticsearch("default");
+					elasticsearchOutputConfig
 							.setIndex("dbdemo") //必填项
+							.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
+
+					/**
+					 elasticsearchOutputConfig.setEsIdGenerator(new EsIdGenerator() {
+					 //如果指定EsIdGenerator，则根据下面的方法生成文档id，
+					 // 否则根据setEsIdField方法设置的字段值作为文档id，
+					 // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+
+					 @Override public Object genId(Context context) throws Exception {
+					 return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
+					 }
+					 });
+					 */
 //					.setIndexType("dbdemo") //es 7以后的版本不需要设置indexType，es7以前的版本必需设置indexType
 //				.setRefreshOption("refresh")//可选项，null表示不实时刷新，importBuilder.setRefreshOption("refresh");表示实时刷新
+					importBuilder.setOutputConfig(elasticsearchOutputConfig)
 							.setUseJavaName(false) //可选项,将数据库字段名称转换为java驼峰规范的名称，true转换，false不转换，默认false，例如:doc_id -> docId
 							.setUseLowcase(false)  //可选项，true 列名称转小写，false列名称不转换小写，默认false，只要在UseJavaName为false的情况下，配置才起作用
 							.setPrintTaskLog(true) //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
@@ -256,19 +273,7 @@ public class DataTran {
 					importBuilder.setThreadCount(6);//设置批量导入线程池工作线程数量
 					importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
 					importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-					importBuilder.setEsIdField("log_id");//设置文档主键，不设置，则自动产生文档id
 
-					/**
-					 importBuilder.setEsIdGenerator(new EsIdGenerator() {
-					 //如果指定EsIdGenerator，则根据下面的方法生成文档id，
-					 // 否则根据setEsIdField方法设置的字段值作为文档id，
-					 // 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
-
-					 @Override public Object genId(Context context) throws Exception {
-					 return SimpleStringUtil.getUUID();//返回null，则由es自动生成文档id
-					 }
-					 });
-					 */
 					importBuilder.setExportResultHandler(new ExportResultHandler<String, String>() {
 						@Override
 						public void success(TaskCommand<String, String> taskCommand, String result) {
@@ -314,7 +319,7 @@ public class DataTran {
 		}
 
 	}
-	private HBaseExportBuilder hBaseExportBuilder;
+	private ImportBuilder hBaseExportBuilder;
 	private DataStream hbase2esDataStream;
 	public String stopHBase2ESJob() {
 		if(hbase2esDataStream != null) {
@@ -338,7 +343,7 @@ public class DataTran {
 		if (hBaseExportBuilder == null) {
 			synchronized (this) {
 				if (hBaseExportBuilder == null) {
-					HBaseExportBuilder importBuilder = new HBaseExportBuilder();
+					ImportBuilder importBuilder = new ImportBuilder();
 					importBuilder.setBatchSize(1000) //设置批量写入目标Elasticsearch记录数
 							.setFetchSize(10000); //设置批量从源Hbase中拉取的记录数,HBase-0.98 默认值为为 100，HBase-1.2 默认值为 2147483647，即 Integer.MAX_VALUE。Scan.next() 的一次 RPC 请求 fetch 的记录条数。配置建议：这个参数与下面的setMaxResultSize配合使用，在网络状况良好的情况下，自定义设置不宜太小， 可以直接采用默认值，不配置。
 
@@ -350,9 +355,10 @@ public class DataTran {
 					/**
 					 * hbase参数配置
 					 */
-//					importBuilder.addHbaseClientProperty("hbase.zookeeper.quorum","192.168.137.133")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
+					HBaseInputConfig hBaseInputConfig = new HBaseInputConfig();
+//					hBaseInputConfig.addHbaseClientProperty("hbase.zookeeper.quorum","192.168.137.133")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
 //							.addHbaseClientProperty("hbase.zookeeper.property.clientPort","2183")
-					importBuilder.addHbaseClientProperty("hbase.zookeeper.quorum","10.13.11.12")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
+					hBaseInputConfig.addHbaseClientProperty("hbase.zookeeper.quorum","10.13.11.12")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
 							.addHbaseClientProperty("hbase.zookeeper.property.clientPort","2185")
 							.addHbaseClientProperty("zookeeper.znode.parent","/hbase")
 							.addHbaseClientProperty("hbase.ipc.client.tcpnodelay","true")
@@ -371,17 +377,6 @@ public class DataTran {
 
 							.setHbaseTable("AgentInfo") //指定需要同步数据的hbase表名称
 					;
-					/**
-					 * es相关配置
-					 * 可以通过addElasticsearchProperty方法添加Elasticsearch客户端配置，
-					 * 也可以直接读取application.properties文件中设置的es配置,两种方式都可以，案例中采用application.properties的方式
-					 */
-//		importBuilder.addElasticsearchProperty("elasticsearch.rest.hostNames","192.168.137.1:9200");//设置es服务器地址，更多配置参数文档：https://esdoc.bbossgroups.com/#/mongodb-elasticsearch?id=_5242-elasticsearch%e5%8f%82%e6%95%b0%e9%85%8d%e7%bd%ae
-					importBuilder.setTargetElasticsearch("default");//设置目标Elasticsearch集群数据源名称，和源elasticsearch集群一样都在application.properties文件中配置
-
-					importBuilder.setIndex("hbase233esdemo") //全局设置要目标elasticsearch索引名称
-							.setIndexType("hbase233esdemo"); //全局设值目标elasticsearch索引类型名称，如果是Elasticsearch 7以后的版本不需要配置
-
 					//FilterList和filter二选一，只需要设置一种
 //		/**
 //		 * 设置hbase检索filter
@@ -392,7 +387,7 @@ public class DataTran {
 //
 //		scvf.setFilterIfMissing(true); //默认为false， 没有此列的数据也会返回 ，为true则只返回name=lisi的数据
 //
-//		importBuilder.setFilter(scvf);
+//		hBaseInputConfig.setFilter(scvf);
 
 					/**
 					 * 设置hbase组合条件FilterList
@@ -412,14 +407,49 @@ public class DataTran {
 //				CompareOperator.EQUAL,Bytes.toBytes("my other value"));
 //
 //		list.addFilter(filter2);
-//		importBuilder.setFilterList(list);
+//		hBaseInputConfig.setFilterList(list);
 
 //		//设置同步起始行和终止行key条件
-//		importBuilder.setStartRow(startRow);
-//		importBuilder.setEndRow(endRow);
+//		hBaseInputConfig.setStartRow(startRow);
+//		hBaseInputConfig.setEndRow(endRow);
 					//设置记录起始时间搓（>=）和截止时间搓(<),如果是基于时间范围的增量同步，则不需要指定下面两个参数
-//		importBuilder.setStartTimestamp(startTimestam);
-//		importBuilder.setEndTimestamp(endTimestamp);
+//		hBaseInputConfig.setStartTimestamp(startTimestam);
+//		hBaseInputConfig.setEndTimestamp(endTimestamp);
+					importBuilder.setInputConfig(hBaseInputConfig);
+					/**
+					 * es相关配置
+					 * 可以通过addElasticsearchProperty方法添加Elasticsearch客户端配置，
+					 * 也可以直接读取application.properties文件中设置的es配置,两种方式都可以，案例中采用application.properties的方式
+					 */
+					ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
+//		elasticsearchOutputConfig.addElasticsearchProperty("elasticsearch.rest.hostNames","192.168.137.1:9200");//设置es服务器地址，更多配置参数文档：https://esdoc.bbossgroups.com/#/mongodb-elasticsearch?id=_5242-elasticsearch%e5%8f%82%e6%95%b0%e9%85%8d%e7%bd%ae
+					elasticsearchOutputConfig.setTargetElasticsearch("default");//设置目标Elasticsearch集群数据源名称，和源elasticsearch集群一样都在application.properties文件中配置
+
+					elasticsearchOutputConfig.setIndex("hbase233esdemo") ;//全局设置要目标elasticsearch索引名称
+//							.setIndexType("hbase233esdemo"); //全局设值目标elasticsearch索引类型名称，如果是Elasticsearch 7以后的版本不需要配置
+// 设置Elasticsearch索引文档_id
+					/**
+					 * 如果指定rowkey为文档_id,那么需要指定前缀meta:，如果是其他数据字段就不需要
+					 * 例如：
+					 * meta:rowkey 行key byte[]
+					 * meta:timestamp  记录时间戳
+					 */
+					elasticsearchOutputConfig.setEsIdField("meta:rowkey");
+					// 设置自定义id生成机制
+					//如果指定EsIdGenerator，则根据下面的方法生成文档id，
+					// 否则根据setEsIdField方法设置的字段值作为文档id，
+					// 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
+//		elasticsearchOutputConfig.setEsIdGenerator(new EsIdGenerator(){
+//
+//			@Override
+//			public Object genId(Context context) throws Exception {
+//					Object id = context.getMetaValue("rowkey");
+//					String agentId = BytesUtils.safeTrim(BytesUtils.toString((byte[]) id, 0, PinpointConstants.AGENT_NAME_MAX_LEN));
+//					return agentId;
+//			}
+//		});
+				  importBuilder.setOutputConfig(elasticsearchOutputConfig);
+
 
 					//定时任务配置，
 					importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
@@ -450,27 +480,6 @@ public class DataTran {
 					}
 					//增量配置结束
 
-					// 设置Elasticsearch索引文档_id
-					/**
-					 * 如果指定rowkey为文档_id,那么需要指定前缀meta:，如果是其他数据字段就不需要
-					 * 例如：
-					 * meta:rowkey 行key byte[]
-					 * meta:timestamp  记录时间戳
-					 */
-					importBuilder.setEsIdField("meta:rowkey");
-					// 设置自定义id生成机制
-					//如果指定EsIdGenerator，则根据下面的方法生成文档id，
-					// 否则根据setEsIdField方法设置的字段值作为文档id，
-					// 如果默认没有配置EsIdField和如果指定EsIdGenerator，则由es自动生成文档id
-//		importBuilder.setEsIdGenerator(new EsIdGenerator(){
-//
-//			@Override
-//			public Object genId(Context context) throws Exception {
-//					Object id = context.getMetaValue("rowkey");
-//					String agentId = BytesUtils.safeTrim(BytesUtils.toString((byte[]) id, 0, PinpointConstants.AGENT_NAME_MAX_LEN));
-//					return agentId;
-//			}
-//		});
 
 
 
@@ -556,8 +565,6 @@ public class DataTran {
 					importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
 					importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 					importBuilder.setPrintTaskLog(true); //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
-//					importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false
-//					importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
 
 					/**
 					 * 设置任务执行情况回调接口
