@@ -20,9 +20,10 @@ import org.frameworkset.elasticsearch.boot.BBossESStarter;
 import org.frameworkset.elasticsearch.serial.SerialUtil;
 import org.frameworkset.tran.DataRefactor;
 import org.frameworkset.tran.DataStream;
+import org.frameworkset.tran.config.ImportBuilder;
 import org.frameworkset.tran.context.Context;
-import org.frameworkset.tran.es.input.es.ES2ESExportBuilder;
-import org.frameworkset.tran.es.output.ESOutputConfig;
+import org.frameworkset.tran.plugin.es.input.ElasticsearchInputConfig;
+import org.frameworkset.tran.plugin.es.output.ElasticsearchOutputConfig;
 import org.frameworkset.tran.schedule.CallInterceptor;
 import org.frameworkset.tran.schedule.ImportIncreamentConfig;
 import org.frameworkset.tran.schedule.TaskContext;
@@ -65,13 +66,55 @@ public class NewES2ESScrollTimestampMultiJobDemo {
 
 
 	public void scheduleScrollRefactorImportData(String jobName){
-		ES2ESExportBuilder importBuilder = new ES2ESExportBuilder();
+		ImportBuilder importBuilder = new ImportBuilder();
 		importBuilder.setBatchSize(1000) //设置批量从源Elasticsearch中拉取的记录数
 				.setFetchSize(5000); //设置批量写入目标Elasticsearch记录数
-		ESOutputConfig esOutputConfig = new ESOutputConfig();
+		ElasticsearchOutputConfig esOutputConfig = new ElasticsearchOutputConfig();
 		esOutputConfig.setTargetElasticsearch("logs");
-		esOutputConfig.setTargetIndex("newes2esdemo-"+jobName);
-		importBuilder.setEsOutputConfig(esOutputConfig);
+		esOutputConfig.setIndex("newes2esdemo-"+jobName);
+		esOutputConfig.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false
+		esOutputConfig.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
+
+		/**
+		 * 如果指定索引文档元数据字段为为文档_id,那么需要指定前缀meta:，如果是其他数据字段就不需要
+		 * **文档_id*
+		 *private String id;
+		 *    **文档对应索引类型信息*
+		 *private String type;
+		 *    **文档对应索引字段信息*
+		 *private Map<String, List<Object>> fields;
+		 * **文档对应版本信息*
+		 *private long version;
+		 *  **文档对应的索引名称*
+		 *private String index;
+		 *  **文档对应的高亮检索信息*
+		 *private Map<String, List<Object>> highlight;
+		 *     **文档对应的排序信息*
+		 *private Object[] sort;
+		 *     **文档对应的评分信息*
+		 *private Double score;
+		 *     **文档对应的父id*
+		 *private Object parent;
+		 *     **文档对应的路由信息*
+		 *private String routing;
+		 *     **文档对应的是否命中信息*
+		 *private boolean found;
+		 *     **文档对应的nested检索信息*
+		 *private Map<String, Object> nested;
+		 *     **文档对应的innerhits信息*
+		 *private Map<String, Map<String, InnerSearchHits>> innerHits;
+		 *     **文档对应的索引分片号*
+		 *private String shard;
+		 *     **文档对应的elasticsearch集群节点名称*
+		 *private String node;
+		 *    **文档对应的打分规则信息*
+		 *private Explanation explanation;
+		 *
+		 *private long seqNo;//"_index": "trace-2017.09.01",
+		 *private long primaryTerm;//"_index": "trace-2017.09.01",
+		 */
+		esOutputConfig.setEsIdField("meta:_id");
+		importBuilder.setOutputConfig(esOutputConfig);
 		//指定导入数据的sql语句，必填项，可以设置自己的提取逻辑，
 		// 设置增量变量log_id，增量变量名称#[log_id]可以多次出现在sql语句的不同位置中，例如：
 		// select * from td_sm_log where log_id > #[log_id] and parent_id = #[log_id]
@@ -80,19 +123,21 @@ public class NewES2ESScrollTimestampMultiJobDemo {
 		/**
 		 * es相关配置
 		 */
-//		importBuilder.setIndex("es2esdemo"); //全局设置要目标elasticsearch索引名称
+		ElasticsearchInputConfig elasticsearchInputConfig = new ElasticsearchInputConfig();
+//		elasticsearchInputConfig.setIndex("es2esdemo"); //全局设置要目标elasticsearch索引名称
 					 //.setIndexType("es2esdemo"); //全局设值目标elasticsearch索引类型名称，如果是Elasticsearch 7以后的版本不需要配置
-		importBuilder
+		elasticsearchInputConfig
 //				.setTargetElasticsearch("targetElasticsearch")//设置目标Elasticsearch集群数据源名称，和源elasticsearch集群一样都在application.properties文件中配置
 				.setSourceElasticsearch("default");
-		importBuilder.setDsl2ndSqlFile("dsl.xml") //指定从源dbdemo表检索数据的dsl语句配置文件名称，可以通过addParam方法传递dsl中的变量参数值
+		elasticsearchInputConfig.setDslFile("dsl.xml") //指定从源dbdemo表检索数据的dsl语句配置文件名称，可以通过addParam方法传递dsl中的变量参数值
 				.setDslName("scrollQuery") //指定从源dbdemo表检索数据的dsl语句名称，可以通过addParam方法传递dsl中的变量参数值
 				.setScrollLiveTime("10m") // 指定scroll查询context有效期，这里是10分钟
 //				.setSliceQuery(true) // 指定scroll查询为slice查询
 //				.setDslName("scrollSliceQuery") //指定从源dbdemo表检索数据的slice scroll dsl语句名称，可以通过addParam方法传递dsl中的变量参数值
 //				.setSliceSize(5) // 指定slice数量，与索引debdemo的shard数量一致即可
-				.setQueryUrl("dbdemo/_search") // 指定从dbdemo索引表检索数据
+				.setQueryUrl("dbdemo/_search"); // 指定从dbdemo索引表检索数据
 
+		importBuilder.setInputConfig(elasticsearchInputConfig)
 //				//添加dsl中需要用到的参数及参数值
 				.addParam("var1","v1")
 				.addParam("var2","v2")
@@ -150,45 +195,7 @@ public class NewES2ESScrollTimestampMultiJobDemo {
 		importBuilder.setStatusDbname(jobName);
 		importBuilder.setLastValueStorePath(jobName+"_newes2esdemo_import");//记录上次采集的增量字段值的文件路径，作为下次增量（或者重启后）采集数据的起点，不同的任务这个路径要不一样
 		importBuilder.setIncreamentEndOffset(5000);
-		/**
-		 * 如果指定索引文档元数据字段为为文档_id,那么需要指定前缀meta:，如果是其他数据字段就不需要
-		 * **文档_id*
-		 *private String id;
-		 *    **文档对应索引类型信息*
-		 *private String type;
-		 *    **文档对应索引字段信息*
-		 *private Map<String, List<Object>> fields;
-		 * **文档对应版本信息*
-		 *private long version;
-		 *  **文档对应的索引名称*
-		 *private String index;
-		 *  **文档对应的高亮检索信息*
-		 *private Map<String, List<Object>> highlight;
-		 *     **文档对应的排序信息*
-		 *private Object[] sort;
-		 *     **文档对应的评分信息*
-		 *private Double score;
-		 *     **文档对应的父id*
-		 *private Object parent;
-		 *     **文档对应的路由信息*
-		 *private String routing;
-		 *     **文档对应的是否命中信息*
-		 *private boolean found;
-		 *     **文档对应的nested检索信息*
-		 *private Map<String, Object> nested;
-		 *     **文档对应的innerhits信息*
-		 *private Map<String, Map<String, InnerSearchHits>> innerHits;
-		 *     **文档对应的索引分片号*
-		 *private String shard;
-		 *     **文档对应的elasticsearch集群节点名称*
-		 *private String node;
-		 *    **文档对应的打分规则信息*
-		 *private Explanation explanation;
-		 *
-		 *private long seqNo;//"_index": "trace-2017.09.01",
-		 *private long primaryTerm;//"_index": "trace-2017.09.01",
-		 */
-		importBuilder.setEsIdField("meta:_id");
+
 
 		// 或者ImportIncreamentConfig.TIMESTAMP_TYPE 日期类型
 		//设置增量查询的起始值lastvalue
@@ -292,11 +299,7 @@ public class NewES2ESScrollTimestampMultiJobDemo {
 		importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
 		importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
 		importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
-//		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false，不打印响应报文将大大提升性能，只有在调试需要的时候才打开，log日志级别同时要设置为INFO
-//		importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认true，如果不需要响应报文将大大提升处理速度
 		importBuilder.setPrintTaskLog(true);
-		importBuilder.setDebugResponse(false);//设置是否将每次处理的reponse打印到日志文件中，默认false
-		importBuilder.setDiscardBulkResponse(true);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
 
 		/**
 		 * 执行es数据导入数据库表操作
