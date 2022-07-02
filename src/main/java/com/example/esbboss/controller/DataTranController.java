@@ -17,9 +17,14 @@ package com.example.esbboss.controller;
 
 import com.example.esbboss.service.DataTran;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Description: </p>
@@ -61,6 +66,16 @@ public class DataTranController {
 	public @ResponseBody
 	String scheduleHBase2ESJob(){
 		return dataTran.scheduleHBase2ESJob();
+	}
+
+	/**
+	 * 启动hbase-es同步作业
+	 * @return
+	 */
+	@RequestMapping("/getData")
+	public @ResponseBody
+	List<Map> getData(@RequestBody Map parmas){
+		return new ArrayList<>();
 	}
 
 	/**
