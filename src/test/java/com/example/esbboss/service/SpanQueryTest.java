@@ -3,6 +3,7 @@ package com.example.esbboss.service;
 import org.frameworkset.elasticsearch.ElasticSearchException;
 import org.frameworkset.elasticsearch.ElasticSearchHelper;
 import org.frameworkset.elasticsearch.boot.BBossESStarter;
+import org.frameworkset.elasticsearch.boot.ElasticSearchBoot;
 import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.frameworkset.elasticsearch.client.ClientUtil;
 import org.frameworkset.elasticsearch.entity.MapRestResponse;
@@ -63,7 +64,33 @@ public class SpanQueryTest {
 			throw e;
 		}
 	}
+	@Test
+	public void testSingleESDatasourceBoot(){
+		Map properties = new HashMap();
+		/**
+		 * 这里只设置必须的配置项，其他的属性参考配置文件：resources/application.properties
+		 *
+		 */
+		//认证账号和口令配置，如果启用了安全认证才需要，支持xpack和searchguard
+		properties.put("elasticsearch.serverNames","es233");
+		properties.put("es233.elasticUser","elastic");
+		properties.put("es233.elasticPassword","changeme");
+		//es服务器地址和端口，多个用逗号分隔
+		properties.put("es233.elasticsearch.rest.hostNames","10.13.6.6:9200");
+		//是否在控制台打印dsl语句，log4j组件日志级别为INFO或者DEBUG
+		properties.put("es233.elasticsearch.showTemplate","true");
+		//集群节点自动发现
+		properties.put("es233.elasticsearch.discoverHost","true");
+//		properties.put("http.timeoutSocket",60000);
+//		properties.put("http.timeoutConnection",40000);
+//		properties.put("http.connectionRequestTimeout",70000);
 
+		ElasticSearchBoot.boot(properties);
+		ClientInterface clientUtil = ElasticSearchHelper.getRestClientUtil("es233");
+		//获取ES版本信息
+		String result = clientUtil.executeHttp("/?pretty", ClientInterface.HTTP_GET);
+		System.out.println(result);
+	}
 	/**
 	 * 添加article索引数据
 	 */
