@@ -399,6 +399,66 @@ file2ES job schedule is not paused, Ignore resumeScheduleJob command.
 file2ES job has been stopped.
 ```
 
+## 5.5 schedule the DB2Kafka data tran job
+Enter the following address in the browser to schedule the DB2Kafka data tran job:
+
+http://localhost:808/scheduleDB2KafkaJob
+
+Return the following search results in the browser to show successful execution:
+作业调度成功
+```json
+db2kafkaImportBuilder job started.
+```
+作业已经在调度执行
+```json
+db2kafkaImportBuilder job has started.
+```
+
+## 5.6 stop the DB2Kafka data tran job
+Enter the following address in the browser to stop the DB2Kafka  data tran job:
+
+http://localhost:808/stopDB2kafkaJob
+
+Return the following search results in the browser to show successful execution:
+作业stop成功
+```json
+db2kafkaImportBuilder job stopped.
+```
+作业已经stop
+```json
+db2kafkaImportBuilder job has stopped.
+```
+
+
+## 5.7 schedule the Kafka2es data tran job
+Enter the following address in the browser to schedule the Kafka2es data tran job:
+
+http://localhost:808/scheduleKafka2esJob
+
+Return the following search results in the browser to show successful execution:
+作业调度成功
+```json
+kafka2esImportBuilder job started.
+```
+作业已经在调度执行
+```json
+kafka2esImportBuilder job has started.
+```
+
+## 5.8 stop the Kafka2es data tran job
+Enter the following address in the browser to stop the Kafka2es  data tran job:
+
+http://localhost:808/stopDB2kafkaJob
+
+Return the following search results in the browser to show successful execution:
+作业stop成功
+```json
+db2kafkaImportBuilder job stopped.
+```
+作业已经stop
+```json
+db2kafkaImportBuilder job has stopped.
+```
 # Development document：
 
 https://esdoc.bbossgroups.com/#/development

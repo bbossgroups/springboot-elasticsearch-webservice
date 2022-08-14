@@ -40,6 +40,45 @@ public class DataTranController {
 	private DataTran dataTran;
 
 	/**
+	 * 启动db-kafka同步作业
+	 * @return
+	 */
+	@RequestMapping("/scheduleDB2KafkaJob")
+	public @ResponseBody
+	String scheduleDB2KafkaJob(){
+		return dataTran.scheduleDB2KafkaJob();
+	}
+
+	/**
+	 * 停止db-kafka同步作业
+	 * @return
+	 */
+	@RequestMapping("/stopDB2kafkaJob")
+	public @ResponseBody String stopDB2kafkaJob(){
+		return dataTran.stopDB2kafkaJob();
+	}
+
+	/**
+	 * 启动kafka-es同步作业
+	 * @return
+	 */
+	@RequestMapping("/scheduleKafka2esJob")
+	public @ResponseBody
+	String scheduleKafka2esJob(){
+		return dataTran.scheduleKafka2esJob();
+	}
+
+	/**
+	 * 停止kafka-es同步作业
+	 * @return
+	 */
+	@RequestMapping("/stopKafka2esJob")
+	public @ResponseBody String stopKafka2esJob(){
+		return dataTran.stopKafka2esJob();
+	}
+
+
+	/**
 	 * 启动db-es同步作业
 	 * @return
 	 */
