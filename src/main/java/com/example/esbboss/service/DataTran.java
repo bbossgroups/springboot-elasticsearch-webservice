@@ -178,7 +178,7 @@ public class DataTran {
 //			}
 //
 //			@Override
-//			public void throwException(TaskContext taskContext, Exception e) {
+//			public void throwException(TaskContext taskContext, Throwable e) {
 //				System.out.println("throwException");
 //			}
 //		}).addCallInterceptor(new CallInterceptor() {
@@ -193,7 +193,7 @@ public class DataTran {
 //			}
 //
 //			@Override
-//			public void throwException(TaskContext taskContext, Exception e) {
+//			public void throwException(TaskContext taskContext, Throwable e) {
 //				System.out.println("throwException 1");
 //			}
 //		});
@@ -266,7 +266,7 @@ public class DataTran {
 						}
 
 						@Override
-						public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
+						public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
 							System.out.println(taskCommand.getTaskMetrics());
 						}
 
@@ -453,7 +453,7 @@ public class DataTran {
 						}
 
 						@Override
-						public void throwException(TaskContext taskContext, Exception e) {
+						public void throwException(TaskContext taskContext, Throwable e) {
 							System.out.println("throwException 1");
 						}
 					});
@@ -567,7 +567,7 @@ public class DataTran {
 						}
 
 						@Override
-						public void exception(TaskCommand<Object,RecordMetadata> taskCommand, Exception exception) {
+						public void exception(TaskCommand<Object,RecordMetadata> taskCommand, Throwable exception) {
 							System.out.println(taskCommand.getTaskMetrics());
 						}
 
@@ -740,7 +740,7 @@ public class DataTran {
 			}
 
 			@Override
-			public void throwException(TaskContext taskContext, Exception e) {
+			public void throwException(TaskContext taskContext, Throwable e) {
 				if(taskContext != null)
 					logger.info(taskContext.getJobTaskMetrics().toString(),e);
 			}
@@ -757,7 +757,7 @@ public class DataTran {
 //			}
 //
 //			@Override
-//			public void throwException(TaskContext taskContext, Exception e) {
+//			public void throwException(TaskContext taskContext, Throwable e) {
 //				System.out.println("throwException 1");
 //			}
 //		});
@@ -849,7 +849,7 @@ public class DataTran {
 						}
 
 						@Override
-						public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
+						public void exception(TaskCommand<String, String> taskCommand, Throwable exception) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 						}
@@ -1143,7 +1143,7 @@ public class DataTran {
 						}
 
 						@Override
-						public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
+						public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 						}

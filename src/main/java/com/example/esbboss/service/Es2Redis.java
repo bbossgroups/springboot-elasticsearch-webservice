@@ -223,7 +223,7 @@
 //            }
 //
 //            @Override
-//            public void throwException(TaskContext taskContext, Exception e) {
+//            public void throwException(TaskContext taskContext, Throwable e) {
 //                System.out.println("数据传输前throwException");
 //                IncrementInfo incrementInfo = SqliteIncrement.getCurrentIncrement(task.getTaskId());
 //
@@ -327,7 +327,7 @@
 //            }
 //
 //            @Override
-//            public void exception(TaskCommand<Object, RecordMetadata> taskCommand, Exception exception) {
+//            public void exception(TaskCommand<Object, RecordMetadata> taskCommand, Throwable exception) {
 //                System.out.println(taskCommand.getTaskMetrics());
 //                IncrementInfo incrementInfo = SqliteIncrement.getCurrentIncrement(task.getTaskId());
 //

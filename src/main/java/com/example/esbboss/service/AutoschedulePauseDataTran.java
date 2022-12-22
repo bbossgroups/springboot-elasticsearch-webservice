@@ -401,7 +401,7 @@ public class AutoschedulePauseDataTran {
 					}
 
 					@Override
-					public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
+					public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
 						logger.warn("error:",exception);
 					}
 
@@ -435,7 +435,7 @@ public class AutoschedulePauseDataTran {
 					}
 
 					@Override
-					public void throwException(TaskContext taskContext, Exception e) {
+					public void throwException(TaskContext taskContext, Throwable e) {
 						if(taskContext != null) {
 							FileTaskContext fileTaskContext = (FileTaskContext)taskContext;
 							logger.info("文件{}导入情况:{}",fileTaskContext.getFileInfo().getOriginFilePath(),taskContext.getJobTaskMetrics().toString());
@@ -602,7 +602,7 @@ public class AutoschedulePauseDataTran {
 			}
 
 			@Override
-			public void throwException(TaskContext taskContext, Exception e) {
+			public void throwException(TaskContext taskContext, Throwable e) {
 				if(taskContext != null)
 					logger.info(taskContext.getJobTaskMetrics().toString(),e);
 			}
@@ -619,7 +619,7 @@ public class AutoschedulePauseDataTran {
 //			}
 //
 //			@Override
-//			public void throwException(TaskContext taskContext, Exception e) {
+//			public void throwException(TaskContext taskContext, Throwable e) {
 //				System.out.println("throwException 1");
 //			}
 //		});
@@ -722,7 +722,7 @@ public class AutoschedulePauseDataTran {
 						}
 
 						@Override
-						public void exception(TaskCommand<String, String> taskCommand, Exception exception) {
+						public void exception(TaskCommand<String, String> taskCommand, Throwable exception) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 						}
@@ -1046,7 +1046,7 @@ public class AutoschedulePauseDataTran {
 						}
 
 						@Override
-						public void exception(TaskCommand<String,String> taskCommand, Exception exception) {
+						public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 						}
