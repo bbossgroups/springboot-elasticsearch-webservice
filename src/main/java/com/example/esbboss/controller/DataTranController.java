@@ -107,6 +107,27 @@ public class DataTranController {
 		return dataTran.scheduleHBase2ESJob();
 	}
 
+
+    /**
+     * 启动hbase-es同步作业
+     * @return
+     */
+    @RequestMapping("/stopDb2EleasticsearchMetrics")
+    public @ResponseBody
+    String stopDb2EleasticsearchMetricsDemo(){
+        return dataTran.stopDb2EleasticsearchMetricsDemo();
+    }
+
+    /**
+     * 启动hbase-es同步作业
+     * @return
+     */
+    @RequestMapping("/scheduleDb2EleasticsearchMetrics")
+    public @ResponseBody
+    String scheduleDb2EleasticsearchMetricsDemo(){
+        return dataTran.scheduleDb2EleasticsearchMetricsDemo();
+    }
+
 	/**
 	 * 启动hbase-es同步作业
 	 * @return
