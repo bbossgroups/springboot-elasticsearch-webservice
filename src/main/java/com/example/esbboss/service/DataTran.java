@@ -291,10 +291,7 @@ public class DataTran {
 							System.out.println(taskCommand.getTaskMetrics());
 						}
 
-						@Override
-						public int getMaxRetry() {
-							return 0;
-						}
+
 					});
 					/**
 					 importBuilder.setEsIdGenerator(new EsIdGenerator() {
@@ -1026,10 +1023,6 @@ public class DataTran {
 							System.out.println(taskCommand.getTaskMetrics());
 						}
 
-						@Override
-						public int getMaxRetry() {
-							return 0;
-						}
 					});
 
 					importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
@@ -1309,10 +1302,7 @@ public class DataTran {
 							logger.info(taskMetrics.toString());
 						}
 
-						@Override
-						public int getMaxRetry() {
-							return 0;
-						}
+
 					});
 					/**
 					 * 执行数据库表数据导入es操作
@@ -1603,10 +1593,7 @@ public class DataTran {
 							logger.info(taskMetrics.toString());
 						}
 
-						@Override
-						public int getMaxRetry() {
-							return 0;
-						}
+
 					});
 					/**
 					 * 执行es数据导入数据库表操作
