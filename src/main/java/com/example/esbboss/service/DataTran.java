@@ -160,7 +160,6 @@ public class DataTran {
 							.setConsumerThreads(5) // 并行消费线程数，建议与topic partitions数一致
 							.setKafkaWorkQueue(10)
 							.setKafkaWorkThreads(2)
-							.setCheckinterval(2000)   // 批量从kafka拉取数据，闲置时间间隔，如果在指定的时间间隔内，没有数据到达并且数据拉取队列中有数据，则强制将队列中的数据交给同步作业程序进行同步处理
 
 							.setPollTimeOut(1000) // 从kafka consumer poll(timeout)参数
 							.setValueCodec(CODEC_JSON)
