@@ -55,6 +55,11 @@ Elasticsearch 7及以上版本
 
 http://localhost:808/testBBossIndexCrud7
 
+
+http://localhost:808/testBBossBulk
+
+http://localhost:808/shutdownBBossBulk
+
 Return the following search results in the browser to indicate successful execution:
 
 ```json
