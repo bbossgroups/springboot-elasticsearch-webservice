@@ -24,6 +24,7 @@ import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.frameworkset.elasticsearch.bulk.*;
 import org.frameworkset.elasticsearch.client.ClientOptions;
+import org.frameworkset.util.shutdown.ShutdownUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -221,7 +222,7 @@ public class EsController {
 
     }
 
-    public synchronized void buildBulkProcessor(int maxMemSize){
+    private synchronized void buildBulkProcessor(int maxMemSize){
         if(bulkProcessor != null)
             return ;
         //定义BulkProcessor批处理组件构建器
@@ -310,6 +311,12 @@ public class EsController {
          * 构建BulkProcessor批处理组件，一般作为单实例使用，单实例多线程安全，可放心使用
          */
         bulkProcessor = bulkProcessorBuilder.build();//构建批处理作业组件
+        ShutdownUtil.addShutdownHook(new Runnable() {
+            @Override
+            public void run() {
+                bulkProcessor.shutDown();
+            }
+        });
     }
 
     /**
