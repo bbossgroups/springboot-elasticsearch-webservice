@@ -60,6 +60,10 @@ http://localhost:808/testBBossBulk
 
 http://localhost:808/shutdownBBossBulk
 
+http://localhost:808/testCommonBBossBulk
+
+http://localhost:808/shutdownCommonBBossBulk
+
 Return the following search results in the browser to indicate successful execution:
 
 ```json
