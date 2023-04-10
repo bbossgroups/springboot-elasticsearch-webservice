@@ -255,7 +255,8 @@ public class EsController {
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
-        }while(i < 100);
+            i ++;
+        }while(i < 50);
 
     }
 
@@ -375,7 +376,7 @@ public class EsController {
         bulkProcessorBuilder.setBlockedWaitTimeout(-1)//指定bulk工作线程缓冲队列已满时后续添加的bulk处理排队等待时间，如果超过指定的时候bulk将被拒绝处理，单位：毫秒，默认为0，不拒绝并一直等待成功为止
 
                 .setBulkSizes(bulkSize)//按批处理数据记录数
-                .setFlushInterval(5000)//强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，但是有记录，那么强制进行bulk处理
+                .setFlushInterval(50000)//强制bulk操作时间，单位毫秒，如果自上次bulk操作flushInterval毫秒后，数据量没有满足BulkSizes对应的记录数，但是有记录，那么强制进行bulk处理
 
                 .setWarnMultsRejects(1000)//由于没有空闲批量处理工作线程，导致bulk处理操作出于阻塞等待排队中，BulkProcessor会对阻塞等待排队次数进行计数统计，bulk处理操作被每被阻塞排队WarnMultsRejects次（1000次），在日志文件中输出拒绝告警信息
                 .setWorkThreads(workThreads)//bulk处理工作线程数
@@ -401,8 +402,11 @@ public class EsController {
 //                           logger.debug(result.getResult());
                         }
 
+                        //查看队列中追加的总记录数
                         logger.info("appendSize:"+bulkCommand.getAppendRecords());
+                        //查看已经被处理成功的总记录数
                         logger.info("totalSize:"+bulkCommand.getTotalSize());
+                        //查看处理失败的记录数
                         logger.info("totalFailedSize:"+bulkCommand.getTotalFailedSize());
                     }
 
