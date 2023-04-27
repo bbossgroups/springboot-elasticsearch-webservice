@@ -468,6 +468,40 @@ db2kafkaImportBuilder job stopped.
 ```json
 db2kafkaImportBuilder job has stopped.
 ```
+
+
+## 5.9 schedule the Db2Eleasticsearch data tran and Metrics job
+Enter the following address in the browser to schedule the Db2Eleasticsearch data tran and Metrics :
+
+http://localhost:808/scheduleDb2EleasticsearchMetrics
+
+Return the following search results in the browser to show successful execution:
+作业调度成功
+```json
+Db2Eleasticsearch data tran and Metrics job started.
+```
+作业已经在调度执行
+```json
+Db2Eleasticsearch data tran and Metrics job has started.
+```
+
+## 5.10 stop the Db2Eleasticsearch data tran and Metrics job
+Enter the following address in the browser to stop the Db2Eleasticsearch data tran and Metrics job:
+
+http://localhost:808/stopDb2EleasticsearchMetrics
+
+Return the following search results in the browser to show successful execution:
+作业stop成功
+```json
+Db2Eleasticsearch data tran and Metrics job stopped.
+```
+作业已经stop
+```json
+Db2Eleasticsearch data tran and Metrics job has stopped.
+```
+
+
+
 # Development document：
 
 https://esdoc.bbossgroups.com/#/development
