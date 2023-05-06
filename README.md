@@ -457,7 +457,7 @@ kafka2esImportBuilder job has started.
 ## 5.8 stop the Kafka2es data tran job
 Enter the following address in the browser to stop the Kafka2es  data tran job:
 
-http://localhost:808/stopDB2kafkaJob
+http://localhost:808/stopKafka2esJob
 
 Return the following search results in the browser to show successful execution:
 作业stop成功

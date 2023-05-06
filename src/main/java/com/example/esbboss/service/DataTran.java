@@ -271,7 +271,6 @@ public class DataTran {
 					importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
 					importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
 					importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-					importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 					importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
 						@Override
 						public void success(TaskCommand<String,String> taskCommand, String result) {
@@ -739,7 +738,6 @@ public class DataTran {
         importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
         importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
         importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-        importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 
         importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
             @Override
@@ -1278,7 +1276,6 @@ public class DataTran {
 					importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
 					importBuilder.setThreadCount(6);//设置批量导入线程池工作线程数量
 					importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-					importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 
 					importBuilder.setExportResultHandler(new ExportResultHandler<String, String>() {
 						@Override
@@ -1567,7 +1564,6 @@ public class DataTran {
 					importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
 					importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
 					importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-					importBuilder.setAsyn(false);//true 异步方式执行，不等待所有导入作业任务结束，方法快速返回；false（默认值） 同步方式执行，等待所有导入作业任务结束，所有作业结束后方法才返回
 					importBuilder.setPrintTaskLog(true); //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
 
 					/**
