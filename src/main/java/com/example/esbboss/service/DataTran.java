@@ -151,7 +151,7 @@ public class DataTran {
 							.addKafkaConfig("auto.commit.interval.ms","5000")
 							.addKafkaConfig("auto.offset.reset","latest")
 //				.addKafkaConfig("bootstrap.servers","192.168.137.133:9093")
-//				.addKafkaConfig("bootstrap.servers","10.13.11.12:9092")
+//				.addKafkaConfig("bootstrap.servers","127.0.0.1:9092")
 							.addKafkaConfig("bootstrap.servers","192.168.137.133:9092")
 							.addKafkaConfig("enable.auto.commit","true")
 							.addKafkaConfig("max.poll.records","500") // The maximum number of records returned in a single call to poll().
@@ -1358,7 +1358,7 @@ public class DataTran {
 					HBaseInputConfig hBaseInputConfig = new HBaseInputConfig();
 //					hBaseInputConfig.addHbaseClientProperty("hbase.zookeeper.quorum","192.168.137.133")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
 //							.addHbaseClientProperty("hbase.zookeeper.property.clientPort","2183")
-					hBaseInputConfig.addHbaseClientProperty("hbase.zookeeper.quorum","10.13.11.12")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
+					hBaseInputConfig.addHbaseClientProperty("hbase.zookeeper.quorum","127.0.0.1")  //hbase客户端连接参数设置，参数含义参考hbase官方客户端文档
 							.addHbaseClientProperty("hbase.zookeeper.property.clientPort","2185")
 							.addHbaseClientProperty("zookeeper.znode.parent","/hbase")
 							.addHbaseClientProperty("hbase.ipc.client.tcpnodelay","true")
