@@ -76,7 +76,7 @@ public class SpanQueryTest {
 		properties.put("es233.elasticUser","elastic");
 		properties.put("es233.elasticPassword","changeme");
 		//es服务器地址和端口，多个用逗号分隔
-		properties.put("es233.elasticsearch.rest.hostNames","10.13.6.6:9200");
+		properties.put("es233.elasticsearch.rest.hostNames","localhost:9200");
 		//是否在控制台打印dsl语句，log4j组件日志级别为INFO或者DEBUG
 		properties.put("es233.elasticsearch.showTemplate","true");
 		//集群节点自动发现
