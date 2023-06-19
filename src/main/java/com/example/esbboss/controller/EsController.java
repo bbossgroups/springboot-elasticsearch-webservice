@@ -266,7 +266,6 @@ public class EsController {
         //定义BulkProcessor批处理组件构建器
         BulkProcessorBuilder bulkProcessorBuilder = new BulkProcessorBuilder();
         bulkProcessorBuilder.setBlockedWaitTimeout(0)//指定bulk数据缓冲队列已满时后续添加的bulk数据排队等待时间，如果超过指定的时候数据将被拒绝处理，单位：毫秒，默认为0，不拒绝并一直等待成功为止
-                .setBulkFailRetry(1)//如果处理失败，重试次数，暂时不起作用
                 .setBulkSizes(10)//按批处理数据记录数，达到BulkSizes对应的值时，执行一次bulk操作
                 //设置批量记录占用内存最大值，以字节为单位，达到最大值时，执行一次bulk操作
                 // 可以根据实际情况调整maxMemSize参数，如果不设置maxMemSize，则按照按批处理数据记录数BulkSizes来判别是否执行执行一次bulk操作
