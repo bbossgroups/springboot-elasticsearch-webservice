@@ -267,7 +267,18 @@ public class AutoschedulePauseDataTran {
 				fileLog2ESImportBuilder.setInputConfig(config);
 				//指定elasticsearch数据源名称，在application.properties文件中配置，default为默认的es数据源名称
 				ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
-				elasticsearchOutputConfig.setTargetElasticsearch("default");
+                elasticsearchOutputConfig
+                        .addTargetElasticsearch("elasticsearch.serverNames","test")
+                        .addElasticsearchProperty("test.elasticsearch.rest.hostNames","192.168.137.1:9200")
+                        .addElasticsearchProperty("test.elasticsearch.showTemplate","true")
+                        .addElasticsearchProperty("test.elasticUser","elastic")
+                        .addElasticsearchProperty("test.elasticPassword","changeme")
+                        .addElasticsearchProperty("test.elasticsearch.failAllContinue","true")
+                        .addElasticsearchProperty("test.http.timeoutSocket","60000")
+                        .addElasticsearchProperty("test.http.timeoutConnection","40000")
+                        .addElasticsearchProperty("test.http.connectionRequestTimeout","70000")
+                        .addElasticsearchProperty("test.http.maxTotal","200")
+                        .addElasticsearchProperty("test.http.defaultMaxPerRoute","100");
 				//指定索引名称，这里采用的是elasticsearch 7以上的版本进行测试，不需要指定type
 				elasticsearchOutputConfig.setIndex("metrics-report");
 				//指定索引类型，这里采用的是elasticsearch 7以上的版本进行测试，不需要指定type
