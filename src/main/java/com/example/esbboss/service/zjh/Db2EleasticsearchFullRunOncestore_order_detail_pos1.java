@@ -40,11 +40,11 @@ import java.util.Date;
  * @version 1.0
  * @Date 2018/9/27 20:38
  */
-public class Db2EleasticsearchFullRunOncestore_order_detail_pos {
-    private static Logger logger = LoggerFactory.getLogger(Db2EleasticsearchFullRunOncestore_order_detail_pos.class);
+public class Db2EleasticsearchFullRunOncestore_order_detail_pos1 {
+    private static Logger logger = LoggerFactory.getLogger(Db2EleasticsearchFullRunOncestore_order_detail_pos1.class);
 
     public static void main(String args[]) {
-        Db2EleasticsearchFullRunOncestore_order_detail_pos db2EleasticsearchDemo = new Db2EleasticsearchFullRunOncestore_order_detail_pos();
+        Db2EleasticsearchFullRunOncestore_order_detail_pos1 db2EleasticsearchDemo = new Db2EleasticsearchFullRunOncestore_order_detail_pos1();
         db2EleasticsearchDemo.importDataRunOnce(false);
     }
 
@@ -71,8 +71,20 @@ public class Db2EleasticsearchFullRunOncestore_order_detail_pos {
 
 //		importBuilder.setSql("select * from td_sm_log where LOG_OPERTIME > #[LOG_OPERTIME]");
         dbInputConfig.setSql("select * from store_order_detail_pos")
-                .setDbName("middle_platform");
+                .setDbName("middle_platform")
+                .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
 
+
+                .setDbUrl(jdbcUrl) //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+                .setJdbcFetchSize(-2147483648)
+                .setDbUser("sync")
+                .setDbPassword("zFfBu21vvfuUzkEE")
+                .setValidateSQL("select 1")
+                .setUsePool(false)
+//                .setDbInitSize(5)
+//                .setDbMinIdleSize(5)
+//                .setDbMaxSize(10)
+                .setShowSql(true);//是否使用连接池;
         importBuilder.setInputConfig(dbInputConfig);
         importBuilder.setIncreamentEndOffset(100);//create_time__endTime,当前时间往前推100秒
 //		importBuilder.addFieldMapping("LOG_CONTENT","message");
@@ -80,7 +92,17 @@ public class Db2EleasticsearchFullRunOncestore_order_detail_pos {
 //		importBuilder.setSql("select * from td_sm_log ");
         ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
         elasticsearchOutputConfig
-                .setTargetElasticsearch("hemiao_es")
+                .addTargetElasticsearch("elasticsearch.serverNames", "hemiao_es")
+                .addElasticsearchProperty("hemiao_es.elasticsearch.rest.hostNames", "es-cn-x0r3bkhai000dw7t4.elasticsearch.aliyuncs.com:9200")
+                .addElasticsearchProperty("hemiao_es.elasticsearch.showTemplate", "true")
+                .addElasticsearchProperty("hemiao_es.elasticUser", "elastic")
+                .addElasticsearchProperty("hemiao_es.elasticPassword", "axsMFaGASJwDTOh3")
+                .addElasticsearchProperty("hemiao_es.elasticsearch.failAllContinue", "true")
+                .addElasticsearchProperty("hemiao_es.http.timeoutSocket", "60000")
+                .addElasticsearchProperty("hemiao_es.http.timeoutConnection", "40000")
+                .addElasticsearchProperty("hemiao_es.http.connectionRequestTimeout", "70000")
+                .addElasticsearchProperty("hemiao_es.http.maxTotal", "200")
+                .addElasticsearchProperty("hemiao_es.http.defaultMaxPerRoute", "100")
                 .setIndex("es_store_order_detail_pos")
                 .setEsIdField("id")//设置文档主键，不设置，则自动产生文档id
                 .setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false

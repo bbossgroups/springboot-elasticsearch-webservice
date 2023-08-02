@@ -40,11 +40,11 @@ import java.util.Date;
  * @version 1.0
  * @Date 2018/9/27 20:38
  */
-public class Db2EleasticsearchFullRunOncestore_order_detail_pos {
-    private static Logger logger = LoggerFactory.getLogger(Db2EleasticsearchFullRunOncestore_order_detail_pos.class);
+public class Db2EleasticsearchFullRunOncestore_order_pos1 {
+    private static Logger logger = LoggerFactory.getLogger(Db2EleasticsearchFullRunOncestore_order_pos1.class);
 
     public static void main(String args[]) {
-        Db2EleasticsearchFullRunOncestore_order_detail_pos db2EleasticsearchDemo = new Db2EleasticsearchFullRunOncestore_order_detail_pos();
+        Db2EleasticsearchFullRunOncestore_order_pos1 db2EleasticsearchDemo = new Db2EleasticsearchFullRunOncestore_order_pos1();
         db2EleasticsearchDemo.importDataRunOnce(false);
     }
 
@@ -59,7 +59,6 @@ public class Db2EleasticsearchFullRunOncestore_order_detail_pos {
         ImportBuilder importBuilder = new ImportBuilder();
         //在任务数据抽取之前做一些初始化处理，例如：通过删表来做初始化操作
 
-
         String jdbcUrl = "jdbc:mysql://192.168.88.10:3306/middle_platform?rewriteBatchedStatements=true&useServerPrepStmts=false&useCompression=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=Asia/Shanghai";
 
         DBInputConfig dbInputConfig = new DBInputConfig();
@@ -70,19 +69,41 @@ public class Db2EleasticsearchFullRunOncestore_order_detail_pos {
         // 通过setLastValueType方法告诉工具增量字段的类型，默认是数字类型
 
 //		importBuilder.setSql("select * from td_sm_log where LOG_OPERTIME > #[LOG_OPERTIME]");
-        dbInputConfig.setSql("select * from store_order_detail_pos")
-                .setDbName("middle_platform");
+        dbInputConfig.setSql("select * from store_order_pos where create_time")
+                .setDbName("middle_platformsecond")
+                .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
 
+
+                .setDbUrl(jdbcUrl) //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+                .setJdbcFetchSize(-2147483648)
+                .setDbUser("sync")
+                .setDbPassword("zFfBu21vvfuUzkEE")
+                .setValidateSQL("select 1")
+                .setUsePool(false)
+                .setDbInitSize(5)
+                .setDbMinIdleSize(5)
+                .setDbMaxSize(10)
+                .setShowSql(true);//是否使用连接池;
         importBuilder.setInputConfig(dbInputConfig);
-        importBuilder.setIncreamentEndOffset(100);//create_time__endTime,当前时间往前推100秒
+
 //		importBuilder.addFieldMapping("LOG_CONTENT","message");
 //		importBuilder.addIgnoreFieldMapping("remark1");
 //		importBuilder.setSql("select * from td_sm_log ");
         ElasticsearchOutputConfig elasticsearchOutputConfig = new ElasticsearchOutputConfig();
         elasticsearchOutputConfig
-                .setTargetElasticsearch("hemiao_es")
-                .setIndex("es_store_order_detail_pos")
-                .setEsIdField("id")//设置文档主键，不设置，则自动产生文档id
+                .addTargetElasticsearch("elasticsearch.serverNames", "hemiao_essecond")
+                .addElasticsearchProperty("hemiao_essecond.elasticsearch.rest.hostNames", "es-cn-x0r3bkhai000dw7t4.elasticsearch.aliyuncs.com:9200")
+                .addElasticsearchProperty("hemiao_essecond.elasticsearch.showTemplate", "true")
+                .addElasticsearchProperty("hemiao_essecond.elasticUser", "elastic")
+                .addElasticsearchProperty("hemiao_essecond.elasticPassword", "axsMFaGASJwDTOh3")
+                .addElasticsearchProperty("hemiao_essecond.elasticsearch.failAllContinue", "true")
+                .addElasticsearchProperty("hemiao_essecond.http.timeoutSocket", "60000")
+                .addElasticsearchProperty("hemiao_essecond.http.timeoutConnection", "40000")
+                .addElasticsearchProperty("hemiao_essecond.http.connectionRequestTimeout", "70000")
+                .addElasticsearchProperty("hemiao_essecond.http.maxTotal", "200")
+                .addElasticsearchProperty("hemiao_essecond.http.defaultMaxPerRoute", "100")
+                .setIndex("es_store_order_pos")
+                .setEsIdField("order_offline_id")//设置文档主键，不设置，则自动产生文档id
                 .setDebugResponse(false)//设置是否将每次处理的reponse打印到日志文件中，默认false
                 .setDiscardBulkResponse(false);//设置是否需要批量处理的响应报文，不需要设置为false，true为需要，默认false
         /**
@@ -118,21 +139,7 @@ public class Db2EleasticsearchFullRunOncestore_order_detail_pos {
                 .setPrintTaskLog(true) //可选项，true 打印任务执行日志（耗时，处理记录数） false 不打印，默认值false
                 .setBatchSize(10);  //可选项,批量导入es的记录数，默认为-1，逐条处理，> 0时批量处理
 
-//        //定时任务配置，
-//        importBuilder.setFixedRate(false)//参考jdk timer task文档对fixedRate的说明
-////					 .setScheduleDate(date) //指定任务开始执行时间：日期
-//                .setDeyLay(1000L) // 任务延迟执行deylay毫秒后执行
-//                .setPeriod(5000L); //每隔period毫秒执行，如果不设置，只执行一次
-//        //定时任务配置结束
-//
-//		//设置任务执行拦截器，可以添加多个，定时任务每次执行的拦截器
 
-//		//设置任务执行拦截器结束，可以添加多个
-        //增量配置开始
-//		importBuilder.setStatusDbname("test");//设置增量状态数据源名称
-
-        // 或者ImportIncreamentConfig.TIMESTAMP_TYPE 日期类型
-        //增量配置结束
 
         //映射和转换配置开始
 //		/**
@@ -209,6 +216,7 @@ public class Db2EleasticsearchFullRunOncestore_order_detail_pos {
          */
         DataStream dataStream = importBuilder.builder();
         dataStream.execute();//执行导入操作
+//		dataStream.destroy();//释放资源
 
 
     }
