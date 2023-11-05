@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>es_bboss_web</artifactId>
+	<artifactId>springboot-elasticsearch-webservice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>es_bboss_web</name>
+	<name>springboot-elasticsearch-webservice</name>
 	<description>Demo project for Spring Boot</description>
 
 	<parent>
