@@ -83,7 +83,7 @@
 //        redisConfig.setName(name)
 //                .setAuth(auth)
 //                //集群节点可以通过逗号分隔，也可以通过\n符分隔
-//                //.setServers("10.13.4.15:6359\n10.13.4.15:6369\n10.13.4.15:6379\n10.13.4.15:6389")
+//                //.setServers("10.103.4.15:6359\n10.103.4.15:6369\n10.103.4.15:6379\n10.103.4.15:6389")
 //                .setServers(servers)
 //                .setMaxRedirections(5)
 //                .setMode(mode)
