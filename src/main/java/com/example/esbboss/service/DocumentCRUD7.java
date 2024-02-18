@@ -50,8 +50,8 @@ public class DocumentCRUD7 {
 		//Create a client tool to load configuration files, single instance multithreaded security
 
 		ClientInterface clientUtil = bbossESStarter.getConfigRestClient(mappath);
-        clientUtil.getIndexesWithCluster("esdatasourcename");
-        clientUtil.getIndexMappingFieldsWithCluster("esdatasourcename","indiceName");
+        clientUtil.getIndexesWithCluster("default");
+        clientUtil.getIndexMappingFieldsWithCluster("default","indiceName");
 		try {
 			//To determine whether the indice demo exists, it returns true if it exists and false if it does not
 			boolean exist = clientUtil.existIndice("demo");

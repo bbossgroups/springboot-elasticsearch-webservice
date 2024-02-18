@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>Description: for Elasticsearch 1.x,2.x,5.x,6.x,+</p>
+ * <p>Description: for Elasticsearch 7.x,8.x,+</p>
  * <p></p>
  * <p>Copyright (c) 2018</p>
  * @Date 2019/9/18 10:27
@@ -47,12 +47,12 @@ import java.util.Map;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class RestClientTest {
-	private Logger logger = LoggerFactory.getLogger(RestClientTest.class);
+public class RestClientTest7 {
+	private Logger logger = LoggerFactory.getLogger(RestClientTest7.class);
 	@Autowired
 	private BBossESStarter bbossESStarter;
 	//DSL config file path
-	private String mappath = "esmapper/demo.xml";
+	private String mappath = "esmapper/demo7.xml";
 
 	@Test
 	public void test(){
@@ -107,7 +107,6 @@ public class RestClientTest {
 
 		//Add the document and force refresh
 		String response = clientUtil.addDocument("demo",//indice name
-				"demo",//idnex type
 				demo,"refresh=true");
 
 
@@ -128,12 +127,10 @@ public class RestClientTest {
 
 		//Add the document and force refresh
 		response = clientUtil.addDocument("demo",//indice name
-				"demo",//idnex type
 				demo,"refresh=true");
 
 		//Get the document object according to the document id, and return the Demo object
 		demo = clientUtil.getDocument("demo",//indice name
-				"demo",//idnex type
 				"2",//document id
 				Demo.class);
 
@@ -149,13 +146,11 @@ public class RestClientTest {
 		demo.setAgentStarttimezh(new Date());
 		//Execute update and force refresh
 		response = clientUtil.addDocument("demo",//index name
-				"demo",//idnex type
 				demo,"refresh=true");
 
 
 		//Get the modified document object according to the document id and return the json message string
 		response = clientUtil.getDocument("demo",//indice name
-				"demo",//idnex type
 				"2");//document id
 		logger.debug("Print the modified result:getDocument-------------------------");
 		logger.debug(response);
@@ -174,7 +169,6 @@ public class RestClientTest {
 		ClientInterface clientUtil = bbossESStarter.getRestClient();
 		//Batch delete documents
 		clientUtil.deleteDocuments("demo",//indice name
-				"demo",//idnex type
 				new String[]{"2","3"});//Batch delete document ids
 	}
 
