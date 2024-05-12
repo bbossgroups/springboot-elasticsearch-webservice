@@ -271,21 +271,21 @@ public class DataTran {
 					importBuilder.setQueue(10);//设置批量导入线程池等待队列长度
 					importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
 					importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
-					importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+					importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
 						@Override
-						public void success(TaskCommand<String,String> taskCommand, String result) {
+						public void success(TaskCommand<String> taskCommand, String result) {
 							TaskMetrics taskMetric = taskCommand.getTaskMetrics();
 							System.out.println("处理耗时："+taskCommand.getElapsed() +"毫秒");
 							System.out.println(taskCommand.getTaskMetrics());
 						}
 
 						@Override
-						public void error(TaskCommand<String,String> taskCommand, String result) {
+						public void error(TaskCommand<String> taskCommand, String result) {
 							System.out.println(taskCommand.getTaskMetrics());
 						}
 
 						@Override
-						public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
+						public void exception(TaskCommand<String> taskCommand, Throwable exception) {
 							System.out.println(taskCommand.getTaskMetrics());
 						}
 
@@ -739,23 +739,23 @@ public class DataTran {
         importBuilder.setThreadCount(50);//设置批量导入线程池工作线程数量
         importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
 
-        importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+        importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
             @Override
-            public void success(TaskCommand<String,String> taskCommand, String result) {
+            public void success(TaskCommand<String> taskCommand, String result) {
                 TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
                 logger.info(taskMetrics.toString());
                 logger.debug(result);
             }
 
             @Override
-            public void error(TaskCommand<String,String> taskCommand, String result) {
+            public void error(TaskCommand<String> taskCommand, String result) {
                 TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
                 logger.info(taskMetrics.toString());
                 logger.debug(result);
             }
 
             @Override
-            public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
+            public void exception(TaskCommand<String> taskCommand, Throwable exception) {
                 TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
                 logger.debug(taskMetrics.toString());
             }
@@ -1002,21 +1002,21 @@ public class DataTran {
 						}
 					});
 					//映射和转换配置结束
-					importBuilder.setExportResultHandler(new ExportResultHandler<Object, RecordMetadata>() {
+					importBuilder.setExportResultHandler(new ExportResultHandler<RecordMetadata>() {
 						@Override
-						public void success(TaskCommand<Object,RecordMetadata> taskCommand, RecordMetadata result) {
+						public void success(TaskCommand<RecordMetadata> taskCommand, RecordMetadata result) {
 							TaskMetrics taskMetric = taskCommand.getTaskMetrics();
 							System.out.println("处理耗时："+taskCommand.getElapsed() +"毫秒");
 							System.out.println(taskCommand.getTaskMetrics());
 						}
 
 						@Override
-						public void error(TaskCommand<Object,RecordMetadata> taskCommand, RecordMetadata result) {
+						public void error(TaskCommand<RecordMetadata> taskCommand, RecordMetadata result) {
 							System.out.println(taskCommand.getTaskMetrics());
 						}
 
 						@Override
-						public void exception(TaskCommand<Object,RecordMetadata> taskCommand, Throwable exception) {
+						public void exception(TaskCommand<RecordMetadata> taskCommand, Throwable exception) {
 							System.out.println(taskCommand.getTaskMetrics());
 						}
 
@@ -1277,23 +1277,23 @@ public class DataTran {
 					importBuilder.setThreadCount(6);//设置批量导入线程池工作线程数量
 					importBuilder.setContinueOnError(true);//任务出现异常，是否继续执行作业：true（默认值）继续执行 false 中断作业执行
 
-					importBuilder.setExportResultHandler(new ExportResultHandler<String, String>() {
+					importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
 						@Override
-						public void success(TaskCommand<String, String> taskCommand, String result) {
+						public void success(TaskCommand<String> taskCommand, String result) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 							logger.info(result);
 						}
 
 						@Override
-						public void error(TaskCommand<String, String> taskCommand, String result) {
+						public void error(TaskCommand<String> taskCommand, String result) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 							logger.info(result);
 						}
 
 						@Override
-						public void exception(TaskCommand<String, String> taskCommand, Throwable exception) {
+						public void exception(TaskCommand<String> taskCommand, Throwable exception) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 						}
@@ -1569,21 +1569,21 @@ public class DataTran {
 					/**
 					 * 设置任务执行情况回调接口
 					 */
-					importBuilder.setExportResultHandler(new ExportResultHandler<String,String>() {
+					importBuilder.setExportResultHandler(new ExportResultHandler<String>() {
 						@Override
-						public void success(TaskCommand<String,String> taskCommand, String result) {
+						public void success(TaskCommand<String> taskCommand, String result) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 						}
 
 						@Override
-						public void error(TaskCommand<String,String> taskCommand, String result) {
+						public void error(TaskCommand<String> taskCommand, String result) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 						}
 
 						@Override
-						public void exception(TaskCommand<String,String> taskCommand, Throwable exception) {
+						public void exception(TaskCommand<String> taskCommand, Throwable exception) {
 							TaskMetrics taskMetrics = taskCommand.getTaskMetrics();
 							logger.info(taskMetrics.toString());
 						}
