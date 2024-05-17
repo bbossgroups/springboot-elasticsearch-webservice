@@ -253,7 +253,7 @@ public class DataTran {
 							long birthDay = context.getLongValue("birthDay");
 							context.addFieldValue("birthDay",new Date(birthDay));
 							// 获取原始的Kafka记录
-							KafkaMapRecord record = (KafkaMapRecord) context.getCurrentRecord();
+							KafkaMapRecord record = (KafkaMapRecord) context.getCurrentRecord().getRecord();
 							if(record.getKey() == null)
 								System.out.println("key is null!");
 							//上述三个属性已经放置到docInfo中，如果无需再放置到索引文档中，可以忽略掉这些属性
