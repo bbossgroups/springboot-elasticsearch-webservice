@@ -39,6 +39,7 @@ import org.frameworkset.tran.kafka.KafkaMapRecord;
 import org.frameworkset.tran.metrics.TaskMetrics;
 import org.frameworkset.tran.metrics.entity.KeyMetric;
 import org.frameworkset.tran.metrics.entity.MapData;
+import org.frameworkset.tran.metrics.entity.MetricKey;
 import org.frameworkset.tran.metrics.job.KeyMetricBuilder;
 import org.frameworkset.tran.metrics.job.Metrics;
 import org.frameworkset.tran.metrics.job.MetricsConfig;
@@ -500,13 +501,13 @@ public class DataTran {
                 //指标1 按操作模块统计模块登录次数
                 addMetricBuilder(new MetricBuilder() {
                     @Override
-                    public String buildMetricKey(MapData mapData){
+                    public MetricKey buildMetricKey(MapData mapData){
                         CommonRecord data = (CommonRecord) mapData.getData();
                         String operModule = (String) data.getData("operModule");
                         if(operModule == null || operModule.equals("")){
                             operModule = "未知模块";
                         }
-                        return operModule;
+                        return new MetricKey(operModule);
                     }
                     @Override
                     public KeyMetricBuilder metricBuilder(){
@@ -522,13 +523,13 @@ public class DataTran {
                 //指标2 按照用户统计登录次数
                 addMetricBuilder(new MetricBuilder() {
                     @Override
-                    public String buildMetricKey(MapData mapData){
+                    public MetricKey buildMetricKey(MapData mapData){
                         CommonRecord data = (CommonRecord) mapData.getData();
                         String logUser = (String) data.getData("logOperuser");//
                         if(logUser == null || logUser.equals("")){
                             logUser = "未知用户";
                         }
-                        return logUser;
+                        return new MetricKey(logUser);
                     }
                     @Override
                     public KeyMetricBuilder metricBuilder(){
