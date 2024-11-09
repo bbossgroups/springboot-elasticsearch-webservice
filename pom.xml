@@ -121,7 +121,7 @@
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
 			<!--<version>5.1.40</version>-->
-			<version>8.0.33</version>
+			<version>9.1.0</version>
 		</dependency>
 		<!--导入db-elasticsearch数据同步依赖包结束 8.0.16-->
 		<dependency>
