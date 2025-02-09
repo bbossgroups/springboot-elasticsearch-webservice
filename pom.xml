@@ -74,7 +74,7 @@
 		<dependency>
 			<groupId>com.bbossgroups.plugins</groupId>
 			<artifactId>bboss-elasticsearch-spring-boot-starter</artifactId>
-			<version>7.3.2</version>
+			<version>7.3.3</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>slf4j-log4j12</artifactId>
@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>com.bbossgroups.plugins</groupId>
 			<artifactId>bboss-datatran-jdbc</artifactId>
-			<version>7.3.2</version>
+			<version>7.3.3</version>
 			<exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -98,7 +98,7 @@
 		<dependency>
 			<groupId>com.bbossgroups.plugins</groupId>
 			<artifactId>bboss-datatran-hbase</artifactId>
-			<version>7.3.2</version>
+			<version>7.3.3</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>slf4j-log4j12</artifactId>
@@ -109,7 +109,7 @@
 		<dependency>
 			<groupId>com.bbossgroups</groupId>
 			<artifactId>bboss-spring-boot-starter</artifactId>
-			<version>6.3.6</version>
+			<version>6.3.7</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>slf4j-log4j12</artifactId>
@@ -157,13 +157,13 @@
 		<dependency>
 			<groupId>com.bbossgroups.plugins</groupId>
 			<artifactId>bboss-datatran-fileftp</artifactId>
-			<version>7.3.2</version>
+			<version>7.3.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbossgroups.plugins</groupId>
 			<artifactId>bboss-datatran-kafka2x</artifactId>
 			<!--<version>5.1.40</version>-->
-			<version>7.3.2</version>
+			<version>7.3.3</version>
 		</dependency>
 
 		<dependency>
