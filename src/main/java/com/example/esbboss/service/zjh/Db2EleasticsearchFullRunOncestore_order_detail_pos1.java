@@ -75,7 +75,7 @@ public class Db2EleasticsearchFullRunOncestore_order_detail_pos1 {
                 .setDbDriver("com.mysql.cj.jdbc.Driver") //数据库驱动程序，必须导入相关数据库的驱动jar包
 
 
-                .setDbUrl(jdbcUrl) //通过useCursorFetch=true启用mysql的游标fetch机制，否则会有严重的性能隐患，useCursorFetch必须和jdbcFetchSize参数配合使用，否则不会生效
+                .setDbUrl(jdbcUrl)
                 .setJdbcFetchSize(-2147483648)
                 .setDbUser("sync")
                 .setDbPassword("zFfBu21vvfuUzkEE")
