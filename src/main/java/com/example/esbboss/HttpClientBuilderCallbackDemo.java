@@ -15,7 +15,7 @@ package com.example.esbboss;
  * limitations under the License.
  */
 
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.frameworkset.spi.remote.http.ClientConfiguration;
 import org.frameworkset.spi.remote.http.callback.HttpClientBuilderCallback;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpClientBuilderCallbackDemo implements HttpClientBuilderCallback {
 	private static Logger logger = LoggerFactory.getLogger(HttpClientBuilderCallbackDemo.class);
-	public HttpClientBuilder customizeHttpClient(HttpClientBuilder builder, ClientConfiguration clientConfiguration) {
+	public HttpClientBuilder customizeHttpClient(HttpClientBuilder builder , ClientConfiguration clientConfiguration) {
 		/**
 		 AWSCredentials credentials = new BasicAWSCredentials("", "");
 		 AWS4Signer signer = new AWS4Signer();
