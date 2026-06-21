@@ -640,9 +640,10 @@ public class DataTran {
         /**
          * 设置IP地址信息库
          */
-        importBuilder.setGeoipDatabase("d:/geolite2/GeoLite2-City.mmdb");
-        importBuilder.setGeoipAsnDatabase("d:/geolite2/GeoLite2-ASN.mmdb");
-        importBuilder.setGeoip2regionDatabase("d:/geolite2/ip2region.db");
+        importBuilder.setGeoipDatabase("C:/workdir/geolite2/GeoLite2-City.mmdb");
+        importBuilder.setGeoipAsnDatabase("C:/workdir/geolite2/GeoLite2-ASN.mmdb");
+        importBuilder.setGeoip2regionDatabase("C:/workdir/geolite2/ip2region_v4.xdb;C:/workdir/geolite2/ip2region_v6.xdb");
+
 
         importBuilder
                 .setUseLowcase(false)

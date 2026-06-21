@@ -130,9 +130,10 @@ public class Db2EleasticsearchFullRunOncestore_order_detail_pos1 {
         /**
          * 设置IP地址信息库
          */
-        importBuilder.setGeoipDatabase("/opt/ip_data/GeoLite2-City.mmdb");
-        importBuilder.setGeoipAsnDatabase("/opt/ip_data/GeoLite2-ASN.mmdb");
-        importBuilder.setGeoip2regionDatabase("/opt/ip_data/ip2region.db");
+        importBuilder.setGeoipDatabase("C:/workdir/geolite2/GeoLite2-City.mmdb");
+        importBuilder.setGeoipAsnDatabase("C:/workdir/geolite2/GeoLite2-ASN.mmdb");
+        importBuilder.setGeoip2regionDatabase("C:/workdir/geolite2/ip2region_v4.xdb;C:/workdir/geolite2/ip2region_v6.xdb");
+
 
         importBuilder
 //
